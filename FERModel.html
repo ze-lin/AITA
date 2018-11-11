@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <!-- Load TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.13.3/dist/tf.min.js"> </script>
+
+    <!-- Place your code in the script tag below. You can also use an external .js file -->
+    <script>
+      // Define a model for linear regression.
+      const model = tf.sequential();
+      const LearnRate = 0.01;
+
+      model.add(tf.layers.conv2d({
+        inputShape: [48, 48, 1], // FER2013 Dataset: 48*48 pixels black&&white
+        kernelSize: 3,
+        filters: 32,
+        activation: 'relu',
+        kernelInitializer: 'VarianceScaling'
+      }));
+      model.add(tf.layers.maxPooling2d({poolSize: 2, strides: 2}));
+
+      // conv2d + pooling layer again
+      model.add(tf.layers.conv2d({
+        inputShape: [48, 48, 1], // FER2013 Dataset: 48*48 pixels black&&white
+        kernelSize: 3,
+        filters: 16,
+        activation: 'relu',
+        kernelInitializer: 'VarianceScaling'
+      }));
+      model.add(tf.layers.maxPooling2d({poolSize: 2, strides: 2}));
+
+
+      model.add(tf.layers.flatten({})); // before dense
+
+      model.add(tf.layers.dense({units: 49, activation: 'relu'}));
+
+      model.add(tf.layers.dense({units: 7, activation: 'softmax'})); // 7 emotions
+
+      const optimizer = tf.train.adam(LearnRate);
+
+      model.compile({
+          optimizer: optimizer,
+          loss: 'categoricalCrossentropy',
+          metrics: ['accuracy'],
+      });
+
+
+      // Train the model using the data.
+      model.fit(xs, ys, {epochs: 25}).then(() => {
+        // tf.loadModel('localstorage://test').then(model => {
+        //   model.predict(tf.tensor2d([5], [1, 1])).print();
+        // });
+        
+        const saveResult = model.save('localstorage://test');
+        console.log(saveResult);
+        
+        // tf.io.removeModel('localstorage://my-model-1');
+        // console.log(tf.io.listModels());
+      });
+    </script>
+  </head>
+
+  <body>
+  </body>
+</html>
