@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="personal">
     <el-table :data="classes" stripe style="width: 100%">
       <el-table-column prop="title" sortable label="课程名称" width="120"></el-table-column>
       <el-table-column prop="teacher" sortable label="任课教师" width="120"></el-table-column>
@@ -10,7 +10,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button @click="see(scope.row)" type="text" size="small">查看</el-button>
-          <el-button @click="handleClick(scope.row)" type="text" size="small">收藏</el-button>
+          <el-button @click="handleClick(scope.row)" type="text" size="small">移除</el-button>
         </template>
       </el-table-column>
     </el-table>
