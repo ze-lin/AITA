@@ -1,13 +1,13 @@
 <template>
   <div class="sign-in">
     <el-form ref="form" status-icon :model="form" :rules="rule" label-width="80px">
-      <el-form-item label="用户名" prop="usr">
-        <el-input v-model="form.usr">
+      <el-form-item label="用户名称" prop="usr">
+        <el-input v-model="form.usr" placeholder="输入您的昵称">
           <i slot="prefix" class="fas fa-user icon"></i>
         </el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="pwd">
-        <el-input type="password" v-model="form.pwd">
+      <el-form-item label="输入密码" prop="pwd">
+        <el-input type="password" v-model="form.pwd" placeholder="输入您的密码">
           <i slot="prefix" class="fas fa-lock icon"></i>
         </el-input>
       </el-form-item>
@@ -64,7 +64,13 @@ export default {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
         .then(function (response) {
-          if(response.data == 'True'){
+          if(response.data.status == 'True'){
+            obj.$root.$data.usr = obj.form.usr;
+            obj.$root.$data.role = response.data.role;
+            obj.$message({
+              message: '成功登陆！',
+              type: 'success'
+            });
             obj.$router.push('/home');
           }
           else{

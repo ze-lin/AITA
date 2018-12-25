@@ -5,7 +5,13 @@ import router from './router'
 
 Vue.config.productionTip = false
 
+const source = {
+  usr: 'ludan',
+  role: 'teacher'
+}
+
 new Vue({
+  data: source,
   router,
   render: h => h(App)
 }).$mount('#app')
