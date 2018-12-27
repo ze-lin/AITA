@@ -1,8 +1,5 @@
 <template>
   <div class="home">
-    <div id="search">
-      添加对 课程名称 任课教师 分类 进行搜索
-    </div>
     <el-table :data="classes" stripe style="width: 100%">
       <el-table-column prop="title" label="课程名称" width="150"></el-table-column>
       <el-table-column prop="teacher" label="任课教师" width="120"></el-table-column>
@@ -46,7 +43,18 @@ export default {
       });
     },
     join(row){
-      this.$router.push('/learn/video/' + row.id);
+      let obj = this;
+      axios.get('http://127.0.0.1:5000/view', {
+        params: {
+          id: row.id 
+        }
+      })
+      .then(function() {
+        obj.$router.push('/learn/video/' + row.id);
+      })
+      .catch(function () {
+        obj.$message.error('糟糕，哪里出了点问题！');
+      });
     },
     refreshCourse: function(){
       let obj = this;

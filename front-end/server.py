@@ -132,6 +132,13 @@ def delete_class():
     COURSE.delete_one({'id': request.args.get('id')})
     return 'True'
 
+@app.route('/view', methods=['GET'])
+def view():
+    result = COURSE.find_one({'id': request.args.get('id')})
+    result['view'] += 1
+    COURSE.replace_one({'id': request.args.get('id')}, result)
+    return 'True'
+
 # -------------------- FOR COLLECTION -----------------------
 @app.route('/addcollection', methods=['GET'])
 def add_collection():
@@ -158,11 +165,14 @@ def get_collection():
 
 @app.route('/deletecollection', methods=['GET'])
 def delete_collection():
-    COLLECTION.delete_one({'id': request.args.get('id')})
+    result_filter = {
+        'id': request.args.get('id'),
+        'usr': request.args.get('usr')
+    }
+    COLLECTION.delete_one(result_filter)
     return 'True'
 
 # -------------------- FOR FOCUS -----------------------
-
 @app.route('/addfocus', methods=['GET'])
 def add_focus():
     result_filter = {

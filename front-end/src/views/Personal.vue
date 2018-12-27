@@ -9,16 +9,13 @@
         <div class="text item"><b>用户名：</b>{{ info.usr }}</div>
         <div class="text item"><b>用户身份：</b>{{ info.role }}</div>
         <div class="text item"><b>注册时间：</b>{{ info.date }}</div>
-        <div class="text item"><b>密码：</b>(添加修改、添加退出登录)
-        <el-button style="float: right; padding: 3px 0" type="text">立即更新</el-button>
-        </div>
       </el-card>
     </div>
     <div class="table">
       <h1>您的收藏</h1>
       <el-table :data="classes" stripe style="width: 100%">
-        <el-table-column prop="title" sortable label="课程名称" width="150"></el-table-column>
-        <el-table-column prop="teacher" sortable label="任课教师" width="120"></el-table-column>
+        <el-table-column prop="title" label="课程名称" width="150"></el-table-column>
+        <el-table-column prop="teacher" label="任课教师" width="120"></el-table-column>
         <el-table-column prop="date" sortable label="开课时间" width="120"></el-table-column>
         <el-table-column prop="time" sortable label="所用时间" width="100"></el-table-column>
         <el-table-column prop="view" sortable label="浏览人数" width="100"></el-table-column>
@@ -104,7 +101,8 @@ export default {
 
       axios.get('http://127.0.0.1:5000/deletecollection', {
         params: {
-          id: row.id
+          id: row.id,
+          usr: this.$root.$data.usr
         }
       })
       .then(function() {
@@ -119,7 +117,18 @@ export default {
       });
     },
     join(row){
-      this.$router.push('/learn/video/' + row.id);
+      let obj = this;
+      axios.get('http://127.0.0.1:5000/view', {
+        params: {
+          id: row.id 
+        }
+      })
+      .then(function() {
+        obj.$router.push('/learn/video/' + row.id);
+      })
+      .catch(function () {
+        obj.$message.error('糟糕，哪里出了点问题！');
+      });
     }
   }
 }

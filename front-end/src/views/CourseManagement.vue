@@ -182,7 +182,6 @@ export default {
       }
     },
     checkResult: function(row){
-      console.log(row.id);
       this.$router.push('/result/' + row.id);
     },
     removeCourse: function(row){
