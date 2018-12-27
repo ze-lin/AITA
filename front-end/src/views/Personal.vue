@@ -1,6 +1,6 @@
 <template>
   <div class="personal">
-    <div class="table">
+    <div class="info">
       <el-card class="box-card" shadow="always">
         <div slot="header" class="clearfix">
           <span class="text title">用户信息</span>
@@ -124,11 +124,18 @@ export default {
 </script>
 
 <style scoped>
-.table{
+.info{
   width: 58%;
   text-align: center;
   margin-left: 20%;
   margin-right: 20%;
+  margin-top: 2%;
+}
+.table{
+  width: 70%;
+  text-align: center;
+  margin-left: 14%;
+  margin-right: 14%;
   margin-top: 2%;
 }
 .text{

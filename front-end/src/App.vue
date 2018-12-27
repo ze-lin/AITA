@@ -6,8 +6,8 @@
           <h1 class="logo">AITA</h1>
         </router-link>
         <div class="nav">
-          <router-link v-if="this.$root.$data.role == 'teacher'" to="course-management">课程管理面板</router-link>
-          <router-link to="personal">个人信息</router-link>
+          <router-link v-if="this.$root.$data.role == 'teacher'" to="/course-management">课程管理面板</router-link>
+          <router-link to="/personal">个人信息</router-link>
         </div>
       </el-header>
       <el-main>

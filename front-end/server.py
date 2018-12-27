@@ -1,17 +1,21 @@
 """
     Micro Server For AITA
 """
-import json, os, datetime, time
+import json, os, datetime, time, math
 from pymongo import MongoClient
 from flask import request, Flask
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 
 client = MongoClient()
 DB = client['aita']
 MEMEBER = DB['member']
 COURSE = DB['course']
 COLLECTION = DB['collection']
+FOCUS = DB['focus']
+COMMENT = DB['comment']
 app = Flask(__name__)
+CORS(app)
 
 # -------------------- FOR USR -----------------------
 @app.route('/signup', methods=['POST'])
@@ -64,9 +68,26 @@ def upload():
         存数据库留给submit_class做
     """
     file = request.files['file']
-    filename = secure_filename(file.filename)
-    file.save(os.path.join('/Users/ludanxer/Programs/AITA/uploads', filename))
+    file_name = secure_filename(file.filename)
+    file.save(os.path.join('/Users/ludanxer/Programs/AITA/front-end/public', file_name))
     return 'True'
+
+@app.route('/getreading', methods=['GET'])
+def get_reading():
+    result = COURSE.find_one({'id': request.args.get('id')})
+    file_name = result['article']
+    file_path = os.path.join('/Users/ludanxer/Programs/AITA/front-end/public', file_name)
+    content = ''
+    with open(file_path, 'r') as f:
+        for line in f:
+            content += line
+    return content
+
+@app.route('/getvideo', methods=['GET'])
+def get_video():
+    result = COURSE.find_one({'id': request.args.get('id')})
+    file_name = result['video']
+    return file_name
 
 @app.route('/submitclass', methods=['GET'])
 def submit_class():
@@ -93,8 +114,6 @@ def get_class():
     json_body = result_filter = {}
     if 'teacher' in request.args:
         result_filter = {'teacher': request.args.get('teacher')}
-    elif 'student' in request.args: # TODO: This is not right
-        result_filter = {'student': request.args.get('student')}
     result = COURSE.find(result_filter)
     i = 0
     for document in result:
@@ -102,6 +121,11 @@ def get_class():
         json_body[i].pop('_id')
         i += 1
     return json.dumps(json_body, indent=2)
+
+@app.route('/getexam', methods=['GET'])
+def get_exam():
+    result = COURSE.find_one({'id': request.args.get('id')})
+    return result['exam']
 
 @app.route('/deleteclass', methods=['GET'])
 def delete_class():
@@ -136,6 +160,67 @@ def get_collection():
 def delete_collection():
     COLLECTION.delete_one({'id': request.args.get('id')})
     return 'True'
+
+# -------------------- FOR FOCUS -----------------------
+
+@app.route('/addfocus', methods=['GET'])
+def add_focus():
+    result_filter = {
+        'usr': request.args.get('usr'),
+        'id': request.args.get('id')
+    }
+    c_time = str(math.floor(float(request.args.get('time'))))
+    result = FOCUS.find_one(result_filter)
+    if result: # 已经有了
+        document = result
+        document['emotion'][c_time] = {
+            'anger': request.args.get('anger'),
+            'disgust': request.args.get('disgust'),
+            'fear': request.args.get('fear'),
+            'happiness': request.args.get('happiness'),
+            'neutral': request.args.get('neutral'),
+            'sadness': request.args.get('sadness'),
+            'surprise': request.args.get('surprise')
+        }
+        FOCUS.replace_one(result_filter, document)
+    else:
+        document = result_filter
+        document['emotion'] = {}
+        document['emotion'][c_time] = {
+            'anger': request.args.get('anger'),
+            'disgust': request.args.get('disgust'),
+            'fear': request.args.get('fear'),
+            'happiness': request.args.get('happiness'),
+            'neutral': request.args.get('neutral'),
+            'sadness': request.args.get('sadness'),
+            'surprise': request.args.get('surprise')
+        }
+        FOCUS.insert_one(document)
+
+    return 'True'
+
+# -------------------- FOR COMMENT -----------------------
+@app.route('/addcomment', methods=['GET'])
+def add_comment():
+    document = {
+        'id': request.args.get('id'),
+        'startTime': request.args.get('startTime'),
+        'endTime': request.args.get('endTime'),
+        'content': request.args.get('content')
+    }
+    COMMENT.insert_one(document)
+    return 'True'
+
+@app.route('/getcomment', methods=['GET'])
+def get_comment():
+    result = COMMENT.find({'id': request.args.get('id')})
+    json_body = {}
+    i = 0
+    for comment in result:
+        json_body[i] = comment
+        json_body[i].pop('_id')
+        i += 1
+    return json.dumps(json_body, indent=2)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port='5000', debug='true')

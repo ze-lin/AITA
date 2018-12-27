@@ -7,7 +7,8 @@ Vue.config.productionTip = false
 
 const source = {
   usr: 'ludan',
-  role: 'teacher'
+  role: 'teacher',
+  course_id: ''
 }
 
 new Vue({

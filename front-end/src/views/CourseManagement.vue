@@ -16,7 +16,7 @@
         </el-form-item>
         <el-form-item label="输入考试ID">
           <el-input v-model="form.exam" placeholder="关于考试ID生成的说明"></el-input>
-          <div class="tip">请前往<a href="https://www.wjx.cn/app/exam.aspx" >问卷星</a>生成。将生成的考试ID填入上方输入框</div>
+          <div class="tip">请前往<b><a target="_blank" href="https://www.wjx.cn/app/exam.aspx" >问卷星</a></b>生成。将生成的考试ID填入上方输入框</div>
         </el-form-item>
         <el-upload class="upload" ref="upload"
           action="http://127.0.0.1:5000/upload"
@@ -46,7 +46,7 @@
         <el-table-column prop="exam" label="考试ID" width="120"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button @click="eidtCourse(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="checkResult(scope.row)" type="text" size="small">结果</el-button>
             <el-button @click="removeCourse(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -181,10 +181,9 @@ export default {
         this.fileReady = true;
       }
     },
-    eidtCourse: function(row){
-      this.eidt = true;
-      this.$message('编辑课程处于下一次迭代开发计划中，尽请期待！');
-      // TODO: 发送请求获取这节课的全部信息
+    checkResult: function(row){
+      console.log(row.id);
+      this.$router.push('/result/' + row.id);
     },
     removeCourse: function(row){
       let obj = this;
