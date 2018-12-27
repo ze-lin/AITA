@@ -1,22 +1,18 @@
 <template>
   <div class="teacher-result">
-    <p>需要有图标</p>
-    <a id="result-link" target="_blank" href="">查看考试题目正确率</a>
+    <a id="result-link" target="_blank" href="">前往问卷星，查看考试题目正确率</a>
+    <canvas id="chart"></canvas>
     <div class="comment">
       <el-form :model="form" ref="commentForm" label-width="100px">
         <el-form-item label="时间范围" prop="time">
-          <el-time-select
-            placeholder="起始时间"
-            v-model="form.startTime"
+          <el-time-select placeholder="起始时间" v-model="form.startTime"
             :picker-options="{
               start: '00:00',
               step: '00:30',
               end: '10:00'
             }">
           </el-time-select>
-          <el-time-select
-            placeholder="结束时间"
-            v-model="form.endTime"
+          <el-time-select placeholder="结束时间" v-model="form.endTime"
             :picker-options="{
               start: '00:00',
               step: '00:30',
@@ -29,7 +25,7 @@
           <el-input type="textarea" v-model="form.desc"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submit">立即创建</el-button>
+          <el-button type="primary" @click="submit">发表评论</el-button>
           <el-button @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -52,6 +48,37 @@ export default {
     })
     .then(function(response) {
       resultElement.href = 'https://www.wjx.cn/report/' + response.data + '.aspx';
+    })
+    .catch(function () {
+      obj.$message.error('糟糕，哪里出了点问题！');
+    });
+
+    let line = document.getElementById('chart').getContext('2d');
+    let chart = new Chart(line, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: "专注度",
+          backgroundColor: '#409EFF',
+          borderColor: '#409EFF',
+          data: [],
+          fill: false
+        }]
+      },
+    });
+
+    axios.get('http://127.0.0.1:5000/getavgfocus', {
+      params: {
+        id: this.$route.params.id
+      }
+    })
+    .then(function(response) {
+      for(let i in response.data){
+        chart.data.labels.push(i);
+        chart.data.datasets[0].data.push(response.data[i]);
+      }
+      chart.update();
     })
     .catch(function () {
       obj.$message.error('糟糕，哪里出了点问题！');
@@ -105,11 +132,20 @@ a {
   text-decoration: none;
 }
 .teacher-result{
-  background-color: wheat;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+#chart{
+  width: 100%;
+}
+.el-input{
+  margin-right: 5%;
 }
 .comment{
-  width: 40%;
-  margin-left: 30%;
-  margin-right: 30%;
+  width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
+  margin-top: 1%;
 }
 </style>

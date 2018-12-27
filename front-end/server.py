@@ -185,6 +185,7 @@ def add_focus():
         FOCUS.replace_one(result_filter, document)
     else:
         document = result_filter
+        document['rate'] = 1.0
         document['emotion'] = {}
         document['emotion'][c_time] = {
             'anger': request.args.get('anger'),
@@ -198,6 +199,54 @@ def add_focus():
         FOCUS.insert_one(document)
 
     return 'True'
+
+@app.route('/getfocus', methods=['GET'])
+def get_focus():
+    result_filter = {
+        'usr': request.args.get('usr'),
+        'id': request.args.get('id')
+    }
+    result = FOCUS.find_one(result_filter)
+    json_body = {}
+    for i in range(0, 600):
+        if str(i) in result['emotion']:
+            json_body[str(i)] = float(result['emotion'][str(i)]['neutral'])
+
+    return json.dumps(json_body, indent=2)
+
+@app.route('/getavgfocus', methods=['GET'])
+def get_avg_focus():
+    result = FOCUS.find({'id': request.args.get('id')})
+    json_body = {}
+    all_weight = 0.0
+    for focus in result:
+        weight = focus['rate']
+        all_weight += weight
+        for i in range(0, 600):
+            if str(i) in focus['emotion']:
+                if str(i) in json_body:
+                    json_body[str(i)] += float(focus['emotion'][str(i)]['neutral']) * weight
+                else:
+                    json_body[str(i)] = float(focus['emotion'][str(i)]['neutral']) * weight
+
+    for i in range(0, 600):
+        if str(i) in json_body:
+            json_body[str(i)] /= all_weight
+
+    return json.dumps(json_body, indent=2)
+
+@app.route('/rate', methods=['GET'])
+def rate():
+    result_filter = {
+        'usr': request.args.get('usr'),
+        'id': request.args.get('id')
+    }
+    result = FOCUS.find_one(result_filter)
+    if result:
+        result['rate'] = int(request.args.get('rate'))/5
+        FOCUS.replace_one(result_filter, result)
+
+    return 'true'
 
 # -------------------- FOR COMMENT -----------------------
 @app.route('/addcomment', methods=['GET'])

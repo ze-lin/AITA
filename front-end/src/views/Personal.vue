@@ -26,7 +26,7 @@
         <el-table-column prop="exam" sortable label="考试ID" width="120"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button @click="see(scope.row)" type="text" size="small">查看</el-button>
+            <el-button @click="join(scope.row)" type="text" size="small">参加</el-button>
             <el-button @click="deleteCollection(scope.row)" type="text" size="small">移除</el-button>
           </template>
         </el-table-column>
@@ -71,7 +71,6 @@ export default {
       })
       .then(function(response) {
         obj.info = response.data;
-        // console.log(response.data);
       })
       .catch(function () {
         obj.$message.error('糟糕，哪里出了点问题！');
@@ -118,6 +117,9 @@ export default {
       .catch(function () {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
+    },
+    join(row){
+      this.$router.push('/learn/video/' + row.id);
     }
   }
 }

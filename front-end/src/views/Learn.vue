@@ -31,10 +31,11 @@ export default {
   height: 100%;
 }
 .side-bar{
-  width: 20%;
-  background-color: aquamarine;
+  width: 18%;
   float: left;
   height: 100%;
+  box-shadow: 2px 2px 10px rgb(220, 220, 220);
+  margin-right: 10px;
 }
 .btn-text{
   color: #303133;
@@ -49,6 +50,5 @@ export default {
   width: 80%;
   height: 100%;
   float: right;
-  background-color: aliceblue;
 }
 </style>
