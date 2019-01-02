@@ -2,7 +2,7 @@
   <div class="log">
     <div id="log-session">
       <div class="image">
-        <img src="@/assets/log.jpg" alt="log" />
+        <img src="@/assets/log.jpeg" alt="log" />
       </div>
       <component :is="logview" @change="change"></component>
     </div>

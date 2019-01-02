@@ -38,7 +38,7 @@ export default {
       }
     })
     .then(function(response) {
-      obj.src = 'http://localhost:8080/' + response.data;
+      obj.videoElement.src = 'http://localhost:8080/' + response.data;
     })
     .catch(function () {
       obj.$message.error('糟糕，哪里出了点问题！');

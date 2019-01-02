@@ -21,6 +21,7 @@
 
 <script>
 import axios from 'axios'
+import md5 from 'js-md5'
 
 export default {
   data(){
@@ -54,7 +55,7 @@ export default {
       let obj = this;
       var params = new URLSearchParams();
       params.append('usr', obj.form.usr); 
-      params.append('pwd', obj.form.pwd); 
+      params.append('pwd', md5(obj.form.pwd)); 
 
       if(this.form.usr != '' && this.form.pwd != ''){
         axios({

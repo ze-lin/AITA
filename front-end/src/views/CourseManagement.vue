@@ -7,8 +7,12 @@
         </el-form-item>
         <el-form-item label="课程分类">
           <el-select v-model="form.genre" placeholder="请选择课程分类">
-            <el-option label="计算机" value="computer"></el-option>
-            <el-option label="心理学" value="mind"></el-option>
+            <el-option label="计算机" value="Computer"></el-option>
+            <el-option label="心理学" value="Mind"></el-option>
+            <el-option label="社会科学" value="Social"></el-option>
+            <el-option label="数学与自然科学" value="Math"></el-option>
+            <el-option label="历史学" value="History"></el-option>
+            <el-option label="文学与艺术" value="Art"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="预计需要时间">
@@ -225,7 +229,7 @@ export default {
   mounted: function(){
     if(this.$root.$data.usr == ''){
       this.$message.error('请先进行登录或注册！');
-      this.$router.push('/');
+      //this.$router.push('/');
     }
     else{
       this.refreshCourse();

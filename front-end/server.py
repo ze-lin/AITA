@@ -87,6 +87,7 @@ def get_reading():
 def get_video():
     result = COURSE.find_one({'id': request.args.get('id')})
     file_name = result['video']
+    print(file_name)
     return file_name
 
 @app.route('/submitclass', methods=['GET'])
