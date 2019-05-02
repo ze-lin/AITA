@@ -6,7 +6,7 @@ import router from './router'
 Vue.config.productionTip = false
 
 const source = {
-  usr: 'ludan',
+  usr: 'ludanxer',
   role: 'teacher',
   course_id: ''
 }

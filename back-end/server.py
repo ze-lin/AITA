@@ -61,6 +61,7 @@ def get_usr_info():
     result.pop('_id')
     return json.dumps(result, indent=2)
 
+
 # -------------------- FOR COURSE -----------------------
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -69,7 +70,10 @@ def upload():
     """
     file = request.files['file']
     file_name = secure_filename(file.filename)
-    file.save(os.path.join('/Users/ludanxer/Programs/AITA/front-end/public', file_name))
+    if not os.path.exists(os.path.join('/Users/ludanxer/Programs/AITA/front-end/public', file_name)):
+        file.save(os.path.join('/Users/ludanxer/Programs/AITA/front-end/public', file_name))
+    else:
+        print('exists!')
     return 'True'
 
 @app.route('/getreading', methods=['GET'])

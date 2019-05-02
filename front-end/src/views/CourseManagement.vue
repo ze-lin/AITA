@@ -22,13 +22,10 @@
           <el-input v-model="form.exam" placeholder="关于考试ID生成的说明"></el-input>
           <div class="tip">请前往<b><a target="_blank" href="https://www.wjx.cn/app/exam.aspx" >问卷星</a></b>生成。将生成的考试ID填入上方输入框</div>
         </el-form-item>
-        <el-upload class="upload" ref="upload"
+        <el-upload ref="upload"
           action="http://127.0.0.1:5000/upload"
           :on-remove="handleRemove"
-          :on-change="onChange"
-          :file-list="fileList"
-          :limit="2"
-          :on-exceed="onExceed"
+          :before-upload="beforeUpload"
           :on-success="onSuccess">
           <el-button size="small" type="primary">点击上传文件</el-button>
           <div slot="tip" class="el-upload__tip">请上传一个md文件作为阅读材料和一个mp4文件作为课程视频</div>
@@ -45,7 +42,7 @@
         <el-table-column prop="title" label="课程名称" width="180"></el-table-column>
         <el-table-column prop="date" sortable label="开课时间" width="120"></el-table-column>
         <el-table-column prop="time" sortable label="所用时间" width="100"></el-table-column>
-        <el-table-column prop="view" sortable label="浏览人数" width="100"></el-table-column>
+        <el-table-column prop="view" sortable label="浏览人次" width="100"></el-table-column>
         <el-table-column prop="genre" label="分类" width="100"></el-table-column>
         <el-table-column prop="exam" label="考试ID" width="120"></el-table-column>
         <el-table-column label="操作">
@@ -73,19 +70,13 @@ export default {
         video: '',
         article: ''
       },
-      fileList: [],
-      edit: false,
-      fileNum: 0,
       fileReady: false,
       classes: []
     }
   },
   methods: {
-    handleRemove: function(file, fileList){
+    handleRemove: function(){
       this.fileReady = false;
-      if(this.edit){
-        // TODO 需要先判断是修改课程还是新建课程，只有修改课程才需要后端请求
-      }
     },
     onSubmit: function(){ // TODO: 如果是更新课程呢？
       let obj = this;
@@ -129,56 +120,35 @@ export default {
       };
       this.$refs.upload.clearFiles();
     },
-    onChange(file, fileList){
+    beforeUpload(file){
       let pattern = /^[0-9a-zA-Z]*$/;
       let fileName = file.name;
-      this.fileNum = fileList.length;
       if(fileName.indexOf('.') == fileName.lastIndexOf('.')){
         let nameList = fileName.split('.');
-        for(let i in nameList[0]){// 确认文件名中只有数字和英文字母
+        for(let i in nameList[0]){ // 确认文件名中只有数字和英文字母
           if(!pattern.test(i)){
             this.$message.error('文件前缀名中只允许包含数字和英文字母！');
-            fileList.pop();
-            return;
+            return false;
           }
         }
         if(nameList[1] == 'md' || nameList[1] == 'mp4'){
-          if(fileList.length == 2){ //上传的第二个文件了，需要一个 md 一个 mp4
-            let firstFile = fileList[0];
-            if(nameList[1] == 'md'){ // 第一个需要时mp4
-              if(firstFile.name.split('.')[1] != 'mp4'){
-                this.$message.error('您已经上传过md文件了，请继续上传mp4文件！');
-                fileList.pop();
-              }
-              else{
-                this.form.video = firstFile.name;
-                this.form.article = fileName;
-              }
-            }
-            else{
-              if(firstFile.name.split('.')[1] != 'md'){
-                this.$message.error('您已经上传过mp4文件了，请继续上传md文件！');
-                fileList.pop();
-              }
-              else{
-                this.form.video = fileName;
-                this.form.article = firstFile.name;
-              }
-            }
+          if(nameList[1] == 'md'){ // 当上传的文件是md
+            this.form.article = fileName;
+          }
+          else{
+            this.form.video = fileName;
           }
         }
         else{
           this.$message.error('文件后缀名只允许是md或mp4！');
-          fileList.pop();
+          return false;
         }
       }
       else{
         this.$message.error('文件名只允许包含一个“.”！');
-        fileList.pop();
+        return false;
       }
-    },
-    onExceed(file, fileList){
-      this.$message.error('您最多只能上传一个md文件和一个mp4文件！');
+      return true;
     },
     onSuccess(response, file, fileList){
       if(fileList.length == 2){

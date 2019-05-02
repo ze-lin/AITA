@@ -18,7 +18,7 @@
         <el-table-column prop="teacher" label="任课教师" width="120"></el-table-column>
         <el-table-column prop="date" sortable label="开课时间" width="120"></el-table-column>
         <el-table-column prop="time" sortable label="所用时间" width="100"></el-table-column>
-        <el-table-column prop="view" sortable label="浏览人数" width="100"></el-table-column>
+        <el-table-column prop="view" sortable label="浏览人次" width="100"></el-table-column>
         <el-table-column prop="genre" sortable label="分类" width="120"></el-table-column>
         <el-table-column prop="exam" sortable label="考试ID" width="120"></el-table-column>
         <el-table-column label="操作">
