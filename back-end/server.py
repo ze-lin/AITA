@@ -3,9 +3,10 @@
 """
 import json, os, datetime, time, math
 from pymongo import MongoClient
-from flask import request, Flask
+from flask import request, Flask, make_response
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
+import base64
 
 client = MongoClient()
 DB = client['aita']
@@ -23,18 +24,21 @@ def sign_up():
     """
         Accept the sign up post request
     """
+    image = request.files['file']
     document = {
         'usr': request.form['usr'],
         'pwd': request.form['pwd'],
         'role': request.form['role'],
-        'date': str(datetime.date.today())
+        'date': str(datetime.date.today()),
+        'pic': base64.encodestring(image.read())
     }
     result = MEMEBER.find_one({'usr': request.form['usr']})
     if result:
         return 'Taken'
     else:
         MEMEBER.insert_one(document)
-        return 'True'
+        return 'Success!'
+
 
 @app.route('/signin', methods=['POST'])
 def sign_in():
@@ -59,8 +63,15 @@ def sign_in():
 def get_usr_info():
     result = MEMEBER.find_one({'usr': request.args.get('usr')})
     result.pop('_id')
+    result.pop('pic')
     return json.dumps(result, indent=2)
 
+@app.route('/getusrpic', methods=['GET'])
+def get_usr_pic():
+    result = MEMEBER.find_one({'usr': request.args.get('usr')})
+    response = make_response(result['pic'])
+    response.headers.set('Content-Type', 'image/png')
+    return response
 
 # -------------------- FOR COURSE -----------------------
 @app.route('/upload', methods=['POST'])

@@ -26,6 +26,19 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item>
+        <el-upload
+          action="http://127.0.0.1:5000/signup"
+          ref="upload"
+          :auto-upload='false'
+          :limit="1"
+          :data='form'
+          :on-success='SuccessUpload'
+          :file-list="fileList">
+          <el-button size="small">点击上传</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传png文件</div>
+        </el-upload>
+      </el-form-item>
       <el-form-item class="btn">
         <el-button type="primary" @click="SignUp">注册</el-button>
         <el-button @click="$emit('change')">登录</el-button>
@@ -70,13 +83,14 @@ export default {
         usr: '',
         pwd: '',
         pwd2: '',
-        role: ''
+        role: '',
       },
       rule: {
         pwd2: [{ validator: validatePass, trigger: 'blur' }],
         pwd: [{ validator: validate, trigger: 'blur' }],
         usr: [{ validator: validateUsr, trigger: 'blur' }]
       },
+      fileList: [],
       options: [{
         value: 'student',
         label: '学生'
@@ -89,39 +103,20 @@ export default {
   },
   methods: {
     SignUp: function(){
-      let obj = this;
-      var params = new URLSearchParams();
-      params.append('usr', obj.form.usr);
-      params.append('pwd', md5(obj.form.pwd));
-      params.append('role', obj.form.role);
-
-      if(this.form.pwd == this.form.pwd2 && this.form.pwd != '' && this.form.usr != '' && this.form.role != ''){
-        axios({
-          method: 'post',
-          url: 'http://127.0.0.1:5000/signup',
-          data: params,
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        })
-        .then(function (reponse) {
-          if(reponse.data == 'Taken'){
-            obj.$message.error('用户名已占用！');
-            obj.form.usr = '';
-          }
-          else{
-            obj.$message({
-              message: '成功注册！',
-              type: 'success'
-            });
-            obj.$emit('change');
-          }
-        })
-        .catch(function () {
-          obj.$message.error('糟糕，哪里出了点问题！');
-        });
+      if(this.form.pwd == this.form.pwd2 && this.form.pwd != '' && this.form.usr != '' && this.form.role != '' && this.$refs.upload.uploadFiles.length == 1){
+        this.form['pwd'] = md5(this.form['pwd']);
+        this.$refs.upload.submit();
       }
       else{
         this.$message.error('请确认输入内容全部正确！');
       }
+    },
+    SuccessUpload: function(){
+      this.$message({
+        message: '成功注册！',
+        type: 'success'
+      });
+      this.$emit('change');
     }
   }
 }
@@ -130,11 +125,11 @@ export default {
 <style scoped>
 .sign-up{
   float: right;
-  margin-top: 150px;
+  margin-top: 120px;
   margin-right: 100px;
 }
 .btn{
-  margin-top: 70px;
+  margin-top: 20px;
   margin-right: 10px;
 }
 </style>

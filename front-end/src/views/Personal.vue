@@ -3,12 +3,13 @@
     <div class="info">
       <el-card class="box-card" shadow="always">
         <div slot="header" class="clearfix">
-          <span class="text title">用户信息</span>
+          <span class="text">用户信息</span>
           <el-button class="in-btn" @click="signout()" type="text">退出登录</el-button>
         </div>
-        <div class="text item"><b>用户名：</b>{{ info.usr }}</div>
-        <div class="text item"><b>用户身份：</b>{{ info.role }}</div>
-        <div class="text item"><b>注册时间：</b>{{ info.date }}</div>
+        <div class="text"><b>用户名：</b>{{ info.usr }}</div>
+        <div class="text"><b>用户身份：</b>{{ info.role }}</div>
+        <div class="text"><b>注册时间：</b>{{ info.date }}</div>
+        <img class="avater" :src="ImageSource" alt="图片读取失败" />
       </el-card>
     </div>
     <div class="table">
@@ -44,7 +45,8 @@ export default {
         date: '',
         pwd: ''
       },
-      classes: []
+      classes: [],
+      ImageSource: 'data:image/png;base64, '
     }
   },
   mounted: function(){
@@ -68,6 +70,19 @@ export default {
       })
       .then(function(response) {
         obj.info = response.data;
+      })
+      .catch(function () {
+        obj.$message.error('糟糕，哪里出了点问题！');
+      });
+
+      axios.get('http://127.0.0.1:5000/getusrpic', {
+        params: {
+          usr: this.$root.$data.usr
+        }
+      })
+      .then(function(response) {
+        console.log(response.data);
+        obj.ImageSource += response.data;
       })
       .catch(function () {
         obj.$message.error('糟糕，哪里出了点问题！');
@@ -161,5 +176,13 @@ export default {
   padding: 0;
   position: relative;
   bottom: 25px;
+}
+.avater{
+  float: right;
+  position: relative;
+  bottom: 100px;
+  height: 100px;
+  margin: 0;
+  padding: 0;
 }
 </style>
