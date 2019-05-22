@@ -82,42 +82,79 @@ export default {
   methods: {
     getEmotionData: function(){
       let face = document.querySelector("#face");
-      if(face == null || face.paused || this.videoElement == '' || this.videoElement.paused || this.videoElement.ended){ // 如果暂停，停止发送请求
-        return;
-      }
+      if(face == null || face.paused || this.videoElement == '' || this.videoElement.paused || this.videoElement.ended) { return; }
       let obj = this;
-      var params = new URLSearchParams();
-      params.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
-      params.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
-      params.append('image_base64', this.take_image());
-      params.append('return_attributes', 'emotion');
+      let currentImage = this.take_image();
 
-      axios({
-        method: 'post',
-        url: 'https://api-cn.faceplusplus.com/facepp/v3/detect',
-        data: params,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      axios.get('http://127.0.0.1:5000/getusrpicstr', {
+        params: { usr: obj.$root.$data.usr }
       })
-      .then(function (response) {
-        if(response.data['faces'].length != 0){ // 未检测到人脸就不发送请求了
-          let emotion = response.data['faces'][0]['attributes']['emotion'];
-          axios.get('http://127.0.0.1:5000/addfocus', {
-            params: {
-              id: obj.$route.params.id,
-              usr: obj.$root.$data.usr,
-              time: obj.videoElement.currentTime,
-              anger: emotion.anger,
-              neutral: emotion.neutral,
-              disgust: emotion.disgust,
-              fear: emotion.fear,
-              happiness: emotion.happiness,
-              sadness: emotion.sadness,
-              surprise: emotion.surprise
-            }
-          });
-        }
+      .then(function(response) {
+        let compareImage = '';
+        compareImage = 'data:image/png;base64,' + response.data;
+        var compareParams = new URLSearchParams();
+        compareParams.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
+        compareParams.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
+        compareParams.append('image_base64_1', currentImage);
+        compareParams.append('image_base64_2', compareImage);
+        axios({
+          method: 'post',
+          url: 'https://api-cn.faceplusplus.com/facepp/v3/compare',
+          data: compareParams,
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
+        .then(function (response) {
+          console.log('人脸对比置信度：' + response.data.confidence);
+          if(response.data.confidence > 70){
+            var params = new URLSearchParams();
+            params.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
+            params.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
+            params.append('image_base64', currentImage);
+            params.append('return_attributes', 'emotion,eyegaze');
+            axios({
+              method: 'post',
+              url: 'https://api-cn.faceplusplus.com/facepp/v3/detect',
+              data: params,
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(function (response) {
+              if(response.data['faces'].length != 0){ // 未检测到人脸就不发送请求了，这样对吗？
+                let emotion = response.data['faces'][0]['attributes']['emotion']; //只考虑第一张人脸（应该是最大的那个）
+                let eyegaze = response.data['faces'][0]['attributes']['eyegaze'];
+                axios.get('http://127.0.0.1:5000/addfocus', {
+                  params: {
+                    id: obj.$route.params.id,
+                    usr: obj.$root.$data.usr,
+                    time: obj.videoElement.currentTime,
+                    anger: emotion.anger,
+                    neutral: emotion.neutral,
+                    disgust: emotion.disgust,
+                    fear: emotion.fear,
+                    happiness: emotion.happiness,
+                    sadness: emotion.sadness,
+                    surprise: emotion.surprise,
+                    position_x: (eyegaze.left_eye_gaze.position_x_coordinate + eyegaze.right_eye_gaze.position_x_coordinate)/2,
+                    position_y: (eyegaze.left_eye_gaze.position_y_coordinate + eyegaze.right_eye_gaze.position_y_coordinate)/2,
+                    vector_x: (eyegaze.left_eye_gaze.vector_x_component + eyegaze.right_eye_gaze.vector_x_component)/2,
+                    vector_y: (eyegaze.left_eye_gaze.vector_y_component + eyegaze.right_eye_gaze.vector_y_component)/2,
+                    vector_z: (eyegaze.left_eye_gaze.vector_z_component + eyegaze.right_eye_gaze.vector_z_component)/2,
+                  }
+                });
+              }
+            })
+            .catch(function() {
+              obj.$message.error('糟糕，哪里出了点问题！');
+            });
+          }
+          else{
+            obj.$message.error('请本人前来听课！');
+          }
+        })
+        .catch(function() {
+          obj.$message.error('糟糕，哪里出了点问题！');
+        });
       })
-      .catch(function() {
+      .catch(function () {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
     },

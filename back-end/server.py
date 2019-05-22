@@ -18,6 +18,13 @@ COMMENT = DB['comment']
 app = Flask(__name__)
 CORS(app)
 
+def calcu_focus(focus_dict):
+    result = 100 - focus_dict['anger'] - focus_dict['disgust'] - focus_dict['fear'] - \
+        focus_dict['sadness']/2 - focus_dict['surprise']/2 - focus_dict['vector_x']*30 - focus_dict['vector_y']*30
+    if result < 0:
+        result = 0
+    return result
+
 # -------------------- FOR USR -----------------------
 @app.route('/signup', methods=['POST'])
 def sign_up():
@@ -66,12 +73,23 @@ def get_usr_info():
     result.pop('pic')
     return json.dumps(result, indent=2)
 
+
 @app.route('/getusrpic', methods=['GET'])
 def get_usr_pic():
     result = MEMEBER.find_one({'usr': request.args.get('usr')})
     response = make_response(result['pic'])
     response.headers.set('Content-Type', 'image/png')
     return response
+
+
+@app.route('/getusrpicstr', methods=['GET'])
+def get_usr_picstr():
+    """
+        为人脸对比返回用户上传的图片
+    """
+    result = MEMEBER.find_one({'usr': request.args.get('usr')})
+    return result['pic']
+
 
 # -------------------- FOR COURSE -----------------------
 @app.route('/upload', methods=['POST'])
@@ -200,13 +218,18 @@ def add_focus():
     if result: # 已经有了
         document = result
         document['emotion'][c_time] = {
-            'anger': request.args.get('anger'),
-            'disgust': request.args.get('disgust'),
-            'fear': request.args.get('fear'),
-            'happiness': request.args.get('happiness'),
-            'neutral': request.args.get('neutral'),
-            'sadness': request.args.get('sadness'),
-            'surprise': request.args.get('surprise')
+            'anger': float(request.args.get('anger')),
+            'disgust': float(request.args.get('disgust')),
+            'fear': float(request.args.get('fear')),
+            'happiness': float(request.args.get('happiness')),
+            'neutral': float(request.args.get('neutral')),
+            'sadness': float(request.args.get('sadness')),
+            'surprise': float(request.args.get('surprise')),
+            'vector_x': abs(float(request.args.get('vector_x'))),
+            'vector_y': abs(float(request.args.get('vector_y'))),
+            'vector_z': float(request.args.get('vector_z')),
+            'position_x': float(request.args.get('position_x')),
+            'position_y': float(request.args.get('position_y'))
         }
         FOCUS.replace_one(result_filter, document)
     else:
@@ -214,20 +237,29 @@ def add_focus():
         document['rate'] = 1.0
         document['emotion'] = {}
         document['emotion'][c_time] = {
-            'anger': request.args.get('anger'),
-            'disgust': request.args.get('disgust'),
-            'fear': request.args.get('fear'),
-            'happiness': request.args.get('happiness'),
-            'neutral': request.args.get('neutral'),
-            'sadness': request.args.get('sadness'),
-            'surprise': request.args.get('surprise')
+            'anger': float(request.args.get('anger')),
+            'disgust': float(request.args.get('disgust')),
+            'fear': float(request.args.get('fear')),
+            'happiness': float(request.args.get('happiness')),
+            'neutral': float(request.args.get('neutral')),
+            'sadness': float(request.args.get('sadness')),
+            'surprise': float(request.args.get('surprise')),
+            'vector_x': float(request.args.get('vector_x')),
+            'vector_y': float(request.args.get('vector_y')),
+            'vector_z': float(request.args.get('vector_z')),
+            'position_x': float(request.args.get('position_x')),
+            'position_y': float(request.args.get('position_y'))
         }
         FOCUS.insert_one(document)
 
     return 'True'
 
+
 @app.route('/getfocus', methods=['GET'])
 def get_focus():
+    """
+        每个学生获取自己的专注度
+    """
     result_filter = {
         'usr': request.args.get('usr'),
         'id': request.args.get('id')
@@ -236,12 +268,15 @@ def get_focus():
     json_body = {}
     for i in range(0, 600):
         if str(i) in result['emotion']:
-            json_body[str(i)] = float(result['emotion'][str(i)]['neutral'])
-
+            json_body[str(i)] = calcu_focus(result['emotion'][str(i)])
     return json.dumps(json_body, indent=2)
+
 
 @app.route('/getavgfocus', methods=['GET'])
 def get_avg_focus():
+    """
+        每个老师获取特定课程的平均专注度
+    """
     result = FOCUS.find({'id': request.args.get('id')})
     json_body = {}
     all_weight = 0.0
@@ -251,15 +286,16 @@ def get_avg_focus():
         for i in range(0, 600):
             if str(i) in focus['emotion']:
                 if str(i) in json_body:
-                    json_body[str(i)] += float(focus['emotion'][str(i)]['neutral']) * weight
+                    json_body[str(i)] += calcu_focus(focus['emotion'][str(i)]) * weight
                 else:
-                    json_body[str(i)] = float(focus['emotion'][str(i)]['neutral']) * weight
+                    json_body[str(i)] = calcu_focus(focus['emotion'][str(i)]) * weight
 
     for i in range(0, 600):
         if str(i) in json_body:
             json_body[str(i)] /= all_weight
 
     return json.dumps(json_body, indent=2)
+
 
 @app.route('/rate', methods=['GET'])
 def rate():

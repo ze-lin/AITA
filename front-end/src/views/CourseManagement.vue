@@ -27,7 +27,7 @@
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
           :on-success="onSuccess">
-          <el-button size="small" type="primary">点击上传文件</el-button>
+          <el-button size="small">点击上传文件</el-button>
           <div slot="tip" class="el-upload__tip">请上传一个md文件作为阅读材料和一个mp4文件作为课程视频</div>
         </el-upload>
         <el-form-item>
@@ -39,7 +39,7 @@
     <div class="classes">
       <h1>您的课程</h1>
       <el-table :data="classes" stripe style="width: 100%">
-        <el-table-column prop="title" label="课程名称" width="180"></el-table-column>
+        <el-table-column prop="title" label="课程名称" width="120"></el-table-column>
         <el-table-column prop="date" sortable label="开课时间" width="120"></el-table-column>
         <el-table-column prop="time" sortable label="所用时间" width="100"></el-table-column>
         <el-table-column prop="view" sortable label="浏览人次" width="100"></el-table-column>

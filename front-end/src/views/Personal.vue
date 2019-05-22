@@ -46,7 +46,7 @@ export default {
         pwd: ''
       },
       classes: [],
-      ImageSource: 'data:image/png;base64, '
+      ImageSource: 'data:image/png;base64,'
     }
   },
   mounted: function(){
@@ -81,7 +81,6 @@ export default {
         }
       })
       .then(function(response) {
-        console.log(response.data);
         obj.ImageSource += response.data;
       })
       .catch(function () {
@@ -181,7 +180,7 @@ export default {
   float: right;
   position: relative;
   bottom: 100px;
-  height: 100px;
+  height: 150px;
   margin: 0;
   padding: 0;
 }

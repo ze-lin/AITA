@@ -36,7 +36,7 @@
           :on-success='SuccessUpload'
           :file-list="fileList">
           <el-button size="small">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传png文件</div>
+          <div slot="tip" class="el-upload__tip">只能上传png文件，且大小不得超过500KB</div>
         </el-upload>
       </el-form-item>
       <el-form-item class="btn">

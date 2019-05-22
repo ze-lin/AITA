@@ -5,7 +5,6 @@ import Home from './views/Home.vue'
 import Learn from './views/Learn.vue'
 import Personal from './views/Personal.vue'
 import CourseManagement from './views/CourseManagement.vue'
-import Course from './views/Course.vue'
 import Video from './components/Video.vue'
 import Reading from './components/Reading.vue'
 import Exam from './components/Exam.vue'
@@ -64,11 +63,6 @@ export default new Router({
           component: StudentResult
         }
       ]
-    },
-    {
-      path: '/course',
-      name: 'course',
-      component: Course
     },
     {
       path: '/result/:id',
