@@ -11,10 +11,13 @@
             <el-input :disabled="true" v-model="info.usr"></el-input>
           </el-form-item>
           <el-form-item label="用户身份">
-            <el-input v-model="info.role"></el-input>
+            <el-input :disabled="true" v-model="info.role"></el-input>
           </el-form-item>
           <el-form-item label="注册时间">
             <el-input :disabled="true" v-model="info.date"></el-input>
+          </el-form-item>
+          <el-form-item label="用户密码">
+            <el-input v-model="info.pwd" show-password></el-input>
           </el-form-item>
         </el-form>
         <img class="avater" :src="ImageSource" alt="图片读取失败" />
@@ -22,19 +25,25 @@
     </div>
 
     <div class="table">
-      <h1>您的收藏</h1>
+      <h1>参与课程完成度</h1>
+      <el-progress class="complete" :text-inside="true" :stroke-width="18" :percentage="totalScore"></el-progress>
       <el-table :data="classes" stripe style="width: 100%">
-        <el-table-column prop="title" label="课程名称" width="150"></el-table-column>
-        <el-table-column prop="teacher" label="任课教师" width="120"></el-table-column>
-        <el-table-column prop="date" sortable label="开课时间" width="120"></el-table-column>
-        <el-table-column prop="time" sortable label="所用时间" width="100"></el-table-column>
-        <el-table-column prop="view" sortable label="浏览人次" width="100"></el-table-column>
-        <el-table-column prop="genre" sortable label="分类" width="120"></el-table-column>
-        <el-table-column prop="exam" sortable label="考试ID" width="120"></el-table-column>
+        <el-table-column prop="title" label="课程名称" width="120"></el-table-column>
+        <el-table-column prop="teacher" label="任课教师" width="100"></el-table-column>
+        <el-table-column prop="date" sortable label="开课时间" width="110"></el-table-column>
+        <el-table-column prop="time" label="所用时间" width="90"></el-table-column>
+        <el-table-column prop="view" label="浏览人次" width="90"></el-table-column>
+        <el-table-column prop="genre" sortable label="分类" width="100"></el-table-column>
+        <el-table-column prop="exam" sortable label="考试ID" width="100"></el-table-column>
+        <el-table-column prop="complete" label="状态" width="80">
+          <template slot-scope="scope">
+            <el-progress type="circle" :width="40" :status="computeStatus(scope.row.complete)" :percentage="scope.row.complete"></el-progress>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button @click="join(scope.row)" type="text" size="small">参加</el-button>
-            <el-button @click="deleteCollection(scope.row)" type="text" size="small">移除</el-button>
+            <el-button @click="joinCourse(scope.row)" type="text" size="small">参加</el-button>
+            <!-- <el-button @click="deleteCollection(scope.row)" type="text" size="small">移除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -56,6 +65,7 @@ export default {
         date: '',
         pwd: ''
       },
+      totalScore: 0,
       classes: [],
       ImageSource: 'data:image/png;base64,'
     }
@@ -65,6 +75,18 @@ export default {
     this.refreshCollection();
   },
   methods: {
+    computeStatus: function(data){
+      if(data > 60){ return 'success'; }
+      else{ return 'exception'; }
+    },
+    computeTotalComplete: function(){
+      let score = 0;
+      for(let course of this.classes){
+        score += course.complete;
+      }
+      if(this.classes.length < 1){ this.totalScore = 0; }
+      else{ return this.totalScore = score/this.classes.length }
+    },
     refreshUsrInfo: function(){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'usr/getinfo')
@@ -89,13 +111,14 @@ export default {
     },
     refreshCollection: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'collection/get')
+      axios.get(process.env.VUE_APP_API_URL + 'completeness/get')
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           obj.classes = [];
           for(let i in response.data){
             obj.classes.push(response.data[i]);
           }
+          obj.computeTotalComplete();
         }
       })
       .catch(function () {
@@ -106,24 +129,24 @@ export default {
       axios.get(process.env.VUE_APP_API_URL + 'auth/logout');
       this.$router.push('/auth');
     },
-    deleteCollection: function(row){
-      let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'collection/delete', {
-        params: {
-          id: row.id,
-        }
-      })
-      .then(function(response) {
-        if(obj.checkUsr(response.data)){
-          obj.refreshCollection();
-          obj.$message({ message: '成功移除！', type: 'success' });
-        }
-      })
-      .catch(function () {
-        obj.$message.error('糟糕，哪里出了点问题！');
-      });
-    },
-    join(row){
+    // deleteCollection: function(row){
+    //   let obj = this;
+    //   axios.get(process.env.VUE_APP_API_URL + 'collection/delete', {
+    //     params: {
+    //       id: row.id,
+    //     }
+    //   })
+    //   .then(function(response) {
+    //     if(obj.checkUsr(response.data)){
+    //       obj.refreshCollection();
+    //       obj.$message({ message: '成功移除！', type: 'success' });
+    //     }
+    //   })
+    //   .catch(function () {
+    //     obj.$message.error('糟糕，哪里出了点问题！');
+    //   });
+    // },
+    joinCourse(row){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'course/view', {
         params: { id: row.id }
@@ -178,5 +201,11 @@ export default {
 .info-form{
   width: 50%;
   float: left;
+}
+.complete{
+  width: 60%;
+  margin-left: 20%;
+  margin-top: 1%;
+  margin-bottom: 1%;
 }
 </style>

@@ -52,11 +52,16 @@ export default {
     })
     .then(function(response) {
       if(obj.checkUsr(response.data)){
-        for(let i in response.data){
-          chart.data.labels.push(i);
-          chart.data.datasets[0].data.push(response.data[i]);
+        if(response.data == 'None'){
+          obj.$message('请先去观看视频，再来查看专注度结果');
         }
-        chart.update();
+        else{
+          for(let i in response.data){
+            chart.data.labels.push(i);
+            chart.data.datasets[0].data.push(response.data[i]);
+          }
+          chart.update();
+        }
       }
     })
     .catch(function () {

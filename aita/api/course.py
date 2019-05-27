@@ -116,8 +116,17 @@ def get_exam():
 @login_required
 def view():
     COURSE = get_collection('course')
-
-    result = COURSE.find_one({'id': request.args.get('id')})
+    course_id = request.args.get('id')
+    result = COURSE.find_one({'id': course_id })
     result['view'] += 1
-    COURSE.replace_one({'id': request.args.get('id')}, result)
+    COURSE.replace_one({'id': course_id }, result)
+
+    COLLECTION = get_collection('collection')
+    document = {
+        'id': course_id,
+        'usr': g.usr['usr']
+    }
+    result = COLLECTION.find_one(document)
+    if not result:
+        COLLECTION.insert_one(document)
     return 'Success!'

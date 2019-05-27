@@ -35,8 +35,10 @@
 
 <script>
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   mounted: function(){
     let resultElement = document.getElementById('result-link');
     let obj = this;
@@ -69,16 +71,21 @@ export default {
     });
 
     axios.get(process.env.VUE_APP_API_URL + 'focus/getavg', {
-      params: {
-        course_id: this.$route.params.id
-      }
+      params: { course_id: this.$route.params.id }
     })
     .then(function(response) {
-      for(let i in response.data){
-        chart.data.labels.push(i);
-        chart.data.datasets[0].data.push(response.data[i]);
+      if(obj.checkUsr(response.data)){
+        if(response.data == 'None'){
+          obj.$message('本课程还没有学生参加，暂无专注度结果');
+        }
+        else{
+          for(let i in response.data){
+            chart.data.labels.push(i);
+            chart.data.datasets[0].data.push(response.data[i]);
+          }
+          chart.update();
+        }
       }
-      chart.update();
     })
     .catch(function () {
       obj.$message.error('糟糕，哪里出了点问题！');

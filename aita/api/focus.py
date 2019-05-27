@@ -63,11 +63,14 @@ def get_focus():
         'id': request.args.get('course_id')
     }
     result = FOCUS.find_one(result_filter)
-    json_body = {}
-    for i in range(0, 600):
-        if str(i) in result['emotion']:
-            json_body[str(i)] = calcu_focus(result['emotion'][str(i)])
-    return jsonify(json_body)
+    if result:
+        json_body = {}
+        for i in range(0, 600):
+            if str(i) in result['emotion']:
+                json_body[str(i)] = calcu_focus(result['emotion'][str(i)])
+        return jsonify(json_body)
+    else:
+        return 'None'
 
 
 @bp.route('/getavg', methods=['GET'])
@@ -79,23 +82,26 @@ def get_avg_focus():
     FOCUS = get_collection('focus')
 
     result = FOCUS.find({'id': request.args.get('course_id')})
-    json_body = {}
-    all_weight = 0.0
-    for focus in result:
-        weight = focus['rate']
-        all_weight += weight
+    if result:
+        json_body = {}
+        all_weight = 0.0
+        for focus in result:
+            weight = focus['rate']
+            all_weight += weight
+            for i in range(0, 600):
+                if str(i) in focus['emotion']:
+                    if str(i) in json_body:
+                        json_body[str(i)] += calcu_focus(focus['emotion'][str(i)]) * weight
+                    else:
+                        json_body[str(i)] = calcu_focus(focus['emotion'][str(i)]) * weight
+
         for i in range(0, 600):
-            if str(i) in focus['emotion']:
-                if str(i) in json_body:
-                    json_body[str(i)] += calcu_focus(focus['emotion'][str(i)]) * weight
-                else:
-                    json_body[str(i)] = calcu_focus(focus['emotion'][str(i)]) * weight
+            if str(i) in json_body:
+                json_body[str(i)] /= all_weight
 
-    for i in range(0, 600):
-        if str(i) in json_body:
-            json_body[str(i)] /= all_weight
-
-    return jsonify(json_body)
+        return jsonify(json_body)
+    else:
+        return 'None'
 
 
 @bp.route('/rate', methods=['GET'])
