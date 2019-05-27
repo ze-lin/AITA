@@ -54,7 +54,7 @@
 
 <script>
 import md5 from 'js-md5'
-import computeActionURLMixin from '../mixins/computeActionURLMixin'
+import computeActionURLMixin from '../mixins/computeActionURLMixin.js'
 
 export default {
   mixins: [computeActionURLMixin],

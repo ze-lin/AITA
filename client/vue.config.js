@@ -1,5 +1,5 @@
 module.exports = {
   publicPath: './',
-  outputDir: '../app/templates',
-  assetsDir: process.env.NODE_ENV === 'production' ? '../app/static' : ''
+  outputDir: '../aita/templates',
+  assetsDir: process.env.NODE_ENV === 'production' ? '../static' : ''
 }

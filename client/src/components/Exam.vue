@@ -6,7 +6,7 @@
 
 <script>
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
 
 export default {
   mixins: [checkUsrMixin],
@@ -18,7 +18,7 @@ export default {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         frame.src = 'https://ks.wjx.top/jq/' + response.data + ',i,t.aspx?width=760&source=iframe';
       }
     })

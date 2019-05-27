@@ -25,7 +25,7 @@
 
 <script>
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
 
 export default {
   mixins: [checkUsrMixin],
@@ -38,7 +38,7 @@ export default {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         obj.videoElement.src = '/static/' + response.data;
       }
     })
@@ -50,7 +50,7 @@ export default {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         for(let i in response.data){
           obj.comment.push(response.data[i]);
         }
@@ -60,7 +60,7 @@ export default {
       obj.$message.error('糟糕，哪里出了点问题！');
     });
  
-    if (navigator.mediaDevices.getUserMedia) {       
+    if(navigator.mediaDevices.getUserMedia) {       
         navigator.mediaDevices.getUserMedia({video: true})
       .then(function(stream) {
         video.srcObject = stream;
@@ -84,7 +84,7 @@ export default {
       let obj = this;
       let currentImage = this.take_image();
 
-      axios.get(process.env.VUE_APP_API_URL + 'auth/getpicstr')
+      axios.get(process.env.VUE_APP_API_URL + 'usr/getpicstr')
       .then(function(response) {
         let compareImage = '';
         compareImage = 'data:image/png;base64,' + response.data;
@@ -97,11 +97,12 @@ export default {
           method: 'post',
           url: 'https://api-cn.faceplusplus.com/facepp/v3/compare',
           data: compareParams,
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          withCredentials: false
         })
         .then(function (response) {
           console.log('人脸对比置信度：' + response.data.confidence);
-          if(response.data.confidence > 70){
+          if(response.data.confidence > 60){
             var params = new URLSearchParams();
             params.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
             params.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
@@ -111,7 +112,8 @@ export default {
               method: 'post',
               url: 'https://api-cn.faceplusplus.com/facepp/v3/detect',
               data: params,
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              withCredentials: false
             })
             .then(function (response) {
               if(response.data['faces'].length != 0){ // 未检测到人脸就不发送请求了，这样对吗？

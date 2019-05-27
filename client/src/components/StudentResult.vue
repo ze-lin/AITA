@@ -13,7 +13,7 @@
 <script>
 import axios from 'axios'
 import Chart from 'chart.js'
-import checkUsrMixin from '../mixins/checkUsrMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
 
 export default {
   mixins: [checkUsrMixin],
@@ -24,7 +24,7 @@ export default {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         resultElement.href = 'https://www.wjx.cn/report/' + response.data + '.aspx';
       }
     })
@@ -51,7 +51,7 @@ export default {
       params: { course_id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         for(let i in response.data){
           chart.data.labels.push(i);
           chart.data.datasets[0].data.push(response.data[i]);
@@ -79,7 +79,7 @@ export default {
         }
       })
       .then(function (response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.$message({ message: '成功评分！', type: 'success' });
         }
       })

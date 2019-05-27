@@ -1,5 +1,5 @@
 import datetime, time, os
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 from aita.auth import login_required
 from aita.db import get_collection
 from werkzeug.utils import secure_filename
@@ -58,8 +58,8 @@ def upload():
     """
     file = request.files['file']
     file_name = secure_filename(file.filename)
-    if not os.path.exists(os.path.join('app/static', file_name)):
-        file.save(os.path.join('app/static', file_name))
+    if not os.path.exists(os.path.join('aita/static', file_name)):
+        file.save(os.path.join('aita/static', file_name))
 
     return 'Success!'
 
@@ -71,7 +71,7 @@ def get_reading():
 
     result = COURSE.find_one({'id': request.args.get('id')})
     file_name = result['article']
-    file_path = os.path.join('app/static', file_name)
+    file_path = os.path.join('aita/static', file_name)
     content = ''
 
     with open(file_path, 'r') as f:

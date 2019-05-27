@@ -24,7 +24,7 @@ def add_focus():
         'id': request.args.get('course_id') # course_id
     }
     c_time = str(math.floor(float(request.args.get('time'))))
-    document = result_filter
+    document = result_filter.copy()
     document['rate'] = 1.0
     document['emotion'] = {}
     document['emotion'][c_time] = {
@@ -43,7 +43,8 @@ def add_focus():
     }
     result = FOCUS.find_one(result_filter)
     if result: # 已经有了
-        FOCUS.replace_one(result_filter, document)
+        result['emotion'][c_time] = document['emotion'][c_time]
+        FOCUS.replace_one(result_filter, result)
     else:
         FOCUS.insert_one(document)
     return 'Success!'

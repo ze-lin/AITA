@@ -15,7 +15,9 @@ def add_collection():
         'id': request.args.get('id'),
         'usr': g.usr['usr']
     }
-    COLLECTION.insert_one(document)
+    result = COLLECTION.find_one(document)
+    if not result:
+        COLLECTION.insert_one(document)
     return 'Success!'
 
 

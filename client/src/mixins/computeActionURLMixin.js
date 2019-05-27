@@ -1,6 +1,6 @@
 export default {
   methods: {
-    computeActionURL(data){
+    computeActionURL: function(data){
       return process.env.VUE_APP_API_URL + data;
     }
   }

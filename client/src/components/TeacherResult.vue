@@ -41,7 +41,7 @@ export default {
     let resultElement = document.getElementById('result-link');
     let obj = this;
 
-    axios.get(process.env.VUE_APP_API_URL + 'getexam', {
+    axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
       params: {
         id: this.$route.params.id
       }
@@ -96,7 +96,7 @@ export default {
   methods: {
     submit: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'addcomment', {
+      axios.get(process.env.VUE_APP_API_URL + 'comment/add', {
         params: {
           id: this.$route.params.id,
           startTime: this.form.startTime,

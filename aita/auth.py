@@ -33,11 +33,11 @@ def sign_in():
     }
     MEMBER = get_collection('member')
 
-
     result = MEMBER.find_one(result_filter)
     if result:
         session.clear() # What is a session? And how does cookie work in this?
         session['usr'] = result['usr']
+        print(session['usr'])
         return jsonify(status=True, role=result['role'])
     else:
         return jsonify(status=False)

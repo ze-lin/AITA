@@ -7,7 +7,7 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
 
 export default {
   components: { VueMarkdown },
@@ -23,7 +23,7 @@ export default {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(checkUsr(response.data)){
+      if(obj.checkUsr(response.data)){
         obj.content = response.data;
       }
     })

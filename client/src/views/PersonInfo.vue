@@ -44,7 +44,7 @@
 
 <script>
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
 
 export default {
   mixins: [checkUsrMixin],
@@ -69,7 +69,7 @@ export default {
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'usr/getinfo')
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.info = response.data;
         }
       })
@@ -79,7 +79,7 @@ export default {
 
       axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.ImageSource += response.data;
         }
       })
@@ -91,7 +91,7 @@ export default {
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'collection/get')
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.classes = [];
           for(let i in response.data){
             obj.classes.push(response.data[i]);
@@ -114,7 +114,7 @@ export default {
         }
       })
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.refreshCollection();
           obj.$message({ message: '成功移除！', type: 'success' });
         }
@@ -129,7 +129,7 @@ export default {
         params: { id: row.id }
       })
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.$router.push('/course/video/' + row.id);
         }
       })

@@ -23,7 +23,7 @@
           <div class="tip">请前往<b><a target="_blank" href="https://www.wjx.cn/app/exam.aspx" >问卷星</a></b>生成。将生成的考试ID填入上方输入框</div>
         </el-form-item>
         <el-upload ref="upload"
-          :action="computeActionURL('upload')"
+          :action="computeActionURL('course/uploadfile')"
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
           :on-success="onSuccess">
@@ -58,8 +58,8 @@
 
 <script>
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin'
-import computeActionURLMixin from '../mixins/computeActionURLMixin'
+import checkUsrMixin from '../mixins/checkUsrMixin.js'
+import computeActionURLMixin from '../mixins/computeActionURLMixin.js'
 
 export default {
   mixins: [checkUsrMixin, computeActionURLMixin],
@@ -78,10 +78,8 @@ export default {
     }
   },
   methods: {
-    handleRemove: function(){
-      this.fileReady = false;
-    },
-    onSubmit: function(){ // TODO: 如果是更新课程呢？
+    handleRemove: function(){ this.fileReady = false; },
+    onSubmit: function(){
       let obj = this;
       if(this.form.title != '' && this.form.genre != '' && this.form.time != '' && this.form.exam != '' && this.fileReady){
         axios.get(process.env.VUE_APP_API_URL + 'course/create', {
@@ -95,7 +93,7 @@ export default {
           }
         })
         .then(function(response) {
-          if(checkUsr(response.data)){
+          if(obj.checkUsr(response.data)){
             obj.$message({ message: '成功创建课程！', type: 'success' });
             obj.refreshCourse();
             obj.clear();
@@ -161,12 +159,11 @@ export default {
     },
     removeCourse: function(row){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + '/course/delete', {
         params: { id: row.id }
       })
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.$message({ message: '成功删除课程！', type: 'success' });
           obj.refreshCourse();
         }
@@ -180,7 +177,7 @@ export default {
       
       axios.get(process.env.VUE_APP_API_URL + 'course/getall')
       .then(function(response) {
-        if(checkUsr(response.data)){
+        if(obj.checkUsr(response.data)){
           obj.classes = [];
           for(let i in response.data){
             obj.classes.push(response.data[i]);
