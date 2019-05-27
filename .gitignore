@@ -102,7 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-flaskr/.DS_Store
-.DS_Store
+*.DS_Store
 *.mp4
-*.mp4
+reading.md
