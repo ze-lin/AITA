@@ -20,6 +20,21 @@ def get_all_course():
     return jsonify(json_body)
 
 
+@bp.route('/getall-teacher', methods=['GET'])
+@login_required
+def get_all_course_teacher():
+    COURSE = get_collection('course')
+    if g.usr['role'] == 'student':
+        return 'student'
+
+    result = COURSE.find({ 'teacher': g.usr['usr'] })
+    json_body = {}
+    for i, document in enumerate(result):
+        json_body[i] = document
+        json_body[i].pop('_id')
+    return jsonify(json_body)
+
+
 @bp.route('/create', methods=['GET'])
 @login_required
 def create_course():

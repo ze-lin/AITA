@@ -174,13 +174,18 @@ export default {
     },
     refreshCourse: function(){
       let obj = this;
-      
-      axios.get(process.env.VUE_APP_API_URL + 'course/getall')
+      axios.get(process.env.VUE_APP_API_URL + 'course/getall-teacher')
       .then(function(response) {
         if(obj.checkUsr(response.data)){
-          obj.classes = [];
-          for(let i in response.data){
-            obj.classes.push(response.data[i]);
+          if(response.data == 'student'){
+            obj.$router.push('/');
+            obj.$message('此功能仅对教师用户开放');
+          }
+          else{
+            obj.classes = [];
+            for(let i in response.data){
+              obj.classes.push(response.data[i]);
+            }
           }
         }
       })
