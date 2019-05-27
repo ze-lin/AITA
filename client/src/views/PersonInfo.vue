@@ -23,7 +23,6 @@
         <img class="avater" :src="ImageSource" alt="图片读取失败" />
       </el-card>
     </div>
-
     <div class="table">
       <h1>参与课程完成度</h1>
       <el-progress class="complete" :text-inside="true" :stroke-width="18" :percentage="totalScore"></el-progress>
@@ -43,7 +42,6 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button @click="joinCourse(scope.row)" type="text" size="small">参加</el-button>
-            <!-- <el-button @click="deleteCollection(scope.row)" type="text" size="small">移除</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -54,9 +52,10 @@
 <script>
 import axios from 'axios'
 import checkUsrMixin from '../mixins/checkUsrMixin.js'
+import joinCourseMixin from '../mixins/joinCourseMixin'
 
 export default {
-  mixins: [checkUsrMixin],
+  mixins: [checkUsrMixin, joinCourseMixin],
   data() {
     return {
       info: {
@@ -72,7 +71,7 @@ export default {
   },
   mounted: function(){
     this.refreshUsrInfo();
-    this.refreshCollection();
+    this.refreshCompleteness();
   },
   methods: {
     computeStatus: function(data){
@@ -109,7 +108,7 @@ export default {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
     },
-    refreshCollection: function(){
+    refreshCompleteness: function(){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'completeness/get')
       .then(function(response) {
@@ -128,37 +127,6 @@ export default {
     signout: function(){
       axios.get(process.env.VUE_APP_API_URL + 'auth/logout');
       this.$router.push('/auth');
-    },
-    // deleteCollection: function(row){
-    //   let obj = this;
-    //   axios.get(process.env.VUE_APP_API_URL + 'collection/delete', {
-    //     params: {
-    //       id: row.id,
-    //     }
-    //   })
-    //   .then(function(response) {
-    //     if(obj.checkUsr(response.data)){
-    //       obj.refreshCollection();
-    //       obj.$message({ message: '成功移除！', type: 'success' });
-    //     }
-    //   })
-    //   .catch(function () {
-    //     obj.$message.error('糟糕，哪里出了点问题！');
-    //   });
-    // },
-    joinCourse(row){
-      let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'course/view', {
-        params: { id: row.id }
-      })
-      .then(function(response) {
-        if(obj.checkUsr(response.data)){
-          obj.$router.push('/course/video/' + row.id);
-        }
-      })
-      .catch(function () {
-        obj.$message.error('糟糕，哪里出了点问题！');
-      });
     }
   }
 }

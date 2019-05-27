@@ -10,8 +10,7 @@
       <el-table-column prop="exam" label="考试ID" width="120"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button @click="join(scope.row)" type="text" size="small">参加</el-button>
-          <el-button @click="addCollection(scope.row)" type="text" size="small">收藏</el-button>
+          <el-button @click="joinCourse(scope.row)" type="text" size="small">参加</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -20,44 +19,12 @@
 
 <script>
 import axios from 'axios'
-import checkUsrMixin from '../mixins/checkUsrMixin.js'
+import checkUsrMixin from '../mixins/checkUsrMixin'
+import joinCourseMixin from '../mixins/joinCourseMixin'
 
 export default {
-  mixins: [checkUsrMixin],
+  mixins: [checkUsrMixin, joinCourseMixin],
   methods: {
-    addCollection(row) {
-      let obj = this;
-
-      axios.get(process.env.VUE_APP_API_URL + 'collection/add', {
-        params: {
-          id: row.id
-        }
-      })
-      .then(function(response) {
-        if(obj.checkUsr(response.data)){
-          obj.$message({ message: '成功收藏！', type: 'success' });
-        }
-      })
-      .catch(function () {
-        obj.$message.error('糟糕，哪里出了点问题！');
-      });
-    },
-
-    join(row){
-      let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'course/view', {
-        params: { id: row.id }
-      })
-      .then(function(response) {
-        if(obj.checkUsr(response.data)){
-          obj.$router.push('/course/video/' + row.id);
-        }
-      })
-      .catch(function () {
-        obj.$message.error('糟糕，哪里出了点问题！');
-      });
-    },
-
     refreshCourse: function(){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'course/getall')
@@ -72,7 +39,6 @@ export default {
       });
     }
   },
-
   data() {
     return {
       classes: []
