@@ -59,9 +59,13 @@ def create_course():
 @bp.route('/delete', methods=['GET'])
 @login_required
 def delete_course():
+    # 级联删除
     COURSE = get_collection('course')
+    COLLECTION = get_collection('collection') # delete all
+    course_id = request.args.get('id')
 
-    COURSE.delete_one({'id': request.args.get('id')})
+    COLLECTION.delete_many({ 'id': course_id })
+    COURSE.delete_one({'id': course_id})
     return 'Success!'
 
 
