@@ -20,8 +20,10 @@
 
 <script>
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   methods: {
     addCollection(row) {
       let obj = this;
@@ -32,15 +34,8 @@ export default {
         }
       })
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
-          obj.$message({
-            message: '成功收藏！',
-            type: 'success'
-          });
+        if(checkUsr(response.data)){
+          obj.$message({ message: '成功收藏！', type: 'success' });
         }
       })
       .catch(function () {
@@ -51,16 +46,10 @@ export default {
     join(row){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'course/view', {
-        params: {
-          id: row.id 
-        }
+        params: { id: row.id }
       })
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.$router.push('/course/video/' + row.id);
         }
       })
@@ -71,7 +60,6 @@ export default {
 
     refreshCourse: function(){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + 'course/getall')
       .then(function(response) {
         obj.classes = [];

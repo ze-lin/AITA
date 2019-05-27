@@ -66,11 +66,7 @@ export default {
         })
         .then(function (response) {
           if(response.status == '200'){
-            obj.$root.$data.role = response.data.role;
-            obj.$message({
-              message: '成功登陆！',
-              type: 'success'
-            });
+            obj.$message({ message: '成功登陆！', type: 'success' });
             obj.$router.push('/');
           }
           else{

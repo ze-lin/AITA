@@ -13,23 +13,18 @@
 <script>
 import axios from 'axios'
 import Chart from 'chart.js'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   mounted: function(){
     let resultElement = document.getElementById('result-link');
     let obj = this;
-
     axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
-      params: {
-        id: this.$route.params.id
-      }
+      params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         resultElement.href = 'https://www.wjx.cn/report/' + response.data + '.aspx';
       }
     })
@@ -53,16 +48,10 @@ export default {
     });
 
     axios.get(process.env.VUE_APP_API_URL + 'focus/get', {
-      params: {
-        course_id: this.$route.params.id,
-      }
+      params: { course_id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         for(let i in response.data){
           chart.data.labels.push(i);
           chart.data.datasets[0].data.push(response.data[i]);
@@ -81,9 +70,7 @@ export default {
   },
   methods: {
     rateChange(){
-      if(this.rate == 0){
-        return;
-      }
+      if(this.rate == 0){ return; }
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'focus/rate', {
         params: {
@@ -92,15 +79,8 @@ export default {
         }
       })
       .then(function (response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
-          obj.$message({
-            message: '成功评分！',
-            type: 'success'
-          });
+        if(checkUsr(response.data)){
+          obj.$message({ message: '成功评分！', type: 'success' });
         }
       })
       .catch(function () {

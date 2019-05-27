@@ -20,6 +20,7 @@
         <img class="avater" :src="ImageSource" alt="图片读取失败" />
       </el-card>
     </div>
+
     <div class="table">
       <h1>您的收藏</h1>
       <el-table :data="classes" stripe style="width: 100%">
@@ -43,8 +44,10 @@
 
 <script>
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   data() {
     return {
       info: {
@@ -64,14 +67,9 @@ export default {
   methods: {
     refreshUsrInfo: function(){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + 'usr/getinfo')
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.info = response.data;
         }
       })
@@ -81,11 +79,7 @@ export default {
 
       axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.ImageSource += response.data;
         }
       })
@@ -93,17 +87,11 @@ export default {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
     },
-
     refreshCollection: function(){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + 'collection/get')
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.classes = [];
           for(let i in response.data){
             obj.classes.push(response.data[i]);
@@ -114,51 +102,34 @@ export default {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
     },
-
     signout: function(){
       axios.get(process.env.VUE_APP_API_URL + 'auth/logout');
       this.$router.push('/auth');
     },
-
     deleteCollection: function(row){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + 'collection/delete', {
         params: {
           id: row.id,
         }
       })
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.refreshCollection();
-          obj.$message({
-            message: '成功移除！',
-            type: 'success'
-          });
+          obj.$message({ message: '成功移除！', type: 'success' });
         }
       })
       .catch(function () {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
     },
-
     join(row){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'course/view', {
-        params: {
-          id: row.id 
-        }
+        params: { id: row.id }
       })
       .then(function(response) {
-        if(response.data == 'Invalid User'){
-          obj.$router.push('/auth');
-          obj.$message('请您先登录或注册！');
-        }
-        else{
+        if(checkUsr(response.data)){
           obj.$router.push('/course/video/' + row.id);
         }
       })

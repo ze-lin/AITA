@@ -25,24 +25,20 @@
 
 <script>
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   mounted: function(){
     let obj = this;
     this.videoElement = document.getElementsByTagName('video')[0];
     let video = document.querySelector("#face");
 
     axios.get(process.env.VUE_APP_API_URL + 'course/getvideo', {
-      params: {
-        id: this.$route.params.id
-      }
+      params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         obj.videoElement.src = '/static/' + response.data;
       }
     })
@@ -51,16 +47,10 @@ export default {
     });
 
     axios.get(process.env.VUE_APP_API_URL + 'comment/get', {
-      params: {
-        id: this.$route.params.id
-      }
+      params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         for(let i in response.data){
           obj.comment.push(response.data[i]);
         }

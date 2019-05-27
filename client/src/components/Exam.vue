@@ -6,23 +6,19 @@
 
 <script>
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
+  mixins: [checkUsrMixin],
   mounted: function(){
     let obj = this;
     let frame = document.getElementsByTagName('iframe')[0];
 
     axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
-      params: {
-        id: this.$route.params.id
-      }
+      params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         frame.src = 'https://ks.wjx.top/jq/' + response.data + ',i,t.aspx?width=760&source=iframe';
       }
     })

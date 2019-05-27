@@ -7,11 +7,11 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import axios from 'axios'
+import checkUsrMixin from '../mixins/checkUsrMixin'
 
 export default {
-  components: {
-    VueMarkdown
-  },
+  components: { VueMarkdown },
+  mixins: [checkUsrMixin],
   data(){
     return {
       content: '请稍后，您的内容正在飞速加载！',
@@ -19,18 +19,11 @@ export default {
   },
   mounted: function(){
     let obj = this;
-
     axios.get(process.env.VUE_APP_API_URL + 'course/getreading', {
-      params: {
-        id: this.$route.params.id
-      }
+      params: { id: this.$route.params.id }
     })
     .then(function(response) {
-      if(response.data == 'Invalid User'){
-        obj.$router.push('/auth');
-        obj.$message('请您先登录或注册！');
-      }
-      else{
+      if(checkUsr(response.data)){
         obj.content = response.data;
       }
     })

@@ -96,7 +96,6 @@ export default {
   methods: {
     submit: function(){
       let obj = this;
-
       axios.get(process.env.VUE_APP_API_URL + 'addcomment', {
         params: {
           id: this.$route.params.id,
@@ -106,10 +105,7 @@ export default {
         }
       })
       .then(function() {
-        obj.$message({
-          message: '成功发表！',
-          type: 'success'
-        });
+        obj.$message({ message: '成功发表！', type: 'success' });
         obj.reset();
       })
       .catch(function () {

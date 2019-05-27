@@ -28,7 +28,7 @@
       </el-form-item>
       <el-form-item>
         <el-upload
-          :action="actionURL"
+          :action="computeActionURL('auth/signup')"
           ref="upload"
           :auto-upload='false'
           list-type="picture-card"
@@ -54,8 +54,10 @@
 
 <script>
 import md5 from 'js-md5'
+import computeActionURLMixin from '../mixins/computeActionURLMixin'
 
 export default {
+  mixins: [computeActionURLMixin],
   data(){
     var validatePass = (rule, value, callback) => {
       if (value === '') {
@@ -94,14 +96,8 @@ export default {
         pwd: [{ validator: validate, trigger: 'blur' }],
         usr: [{ validator: validateUsr, trigger: 'blur' }]
       },
-      options: [{
-        value: 'student',
-        label: '学生'
-      },
-      {
-        value: 'teacher',
-        label: '教师'
-      }],
+      options: [{ value: 'student', label: '学生' },
+                { value: 'teacher', label: '教师' }],
       dialogImageUrl: '',
       dialogVisible: false
     }
@@ -117,10 +113,7 @@ export default {
       }
     },
     HandleSuccess: function(){
-      this.$message({
-        message: '成功注册！',
-        type: 'success'
-      });
+      this.$message({ message: '成功注册！', type: 'success' });
       this.$emit('change');
     },
     HandleExceed: function(){
@@ -129,11 +122,6 @@ export default {
     HandlePreview: function(file){
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
-    }
-  },
-  computed: {
-    actionURL: function(){
-      return process.env.VUE_APP_API_URL + 'auth/signup';
     }
   }
 }
