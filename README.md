@@ -12,7 +12,7 @@ Online learning platform with face features detection and concentration grading.
 - [x] 课程的级联删除
 - [x] 尚未参与课程时，专注度的返回内容
 - [x] 页面刷新后的状态维护
-- [ ] Home 页面课程搜索
+- [x] Home 页面课程搜索
 - [ ] 创建测试数据
 - [ ] PersonInfo 页面的个人信息更新
 - [ ] 根据 RESTful API 重构代码
