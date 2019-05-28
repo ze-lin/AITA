@@ -21,9 +21,9 @@ Online learning platform with face features detection and concentration grading.
 
 ## TESTING
 
-  1. Black Box Testing [1]: 'aita/auth.py', methods: Boundary Value Analysis
-  2. Black Box Testing [2]: 'aita/api/focus.py', methods: Equivalence Class Partitioning
-  3. White Box Testing: 'aita/api/usr.py'
+  1. Black Box Testing [1]: `aita/auth.py`, methods: Boundary Value Analysis
+  2. Black Box Testing [2]: `aita/api/focus.py`, methods: Equivalence Class Partitioning
+  3. White Box Testing: `aita/api/usr.py`
 
 ## RUN
 
