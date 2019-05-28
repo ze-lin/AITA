@@ -36,4 +36,3 @@ def get_usr_picstr():
 
     result = MEMBER.find_one({'usr': g.usr['usr']})
     return result['pic']
-

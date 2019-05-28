@@ -19,6 +19,12 @@ Online learning platform with face features detection and concentration grading.
 - [ ] 使用 vue-chart 与 Vuex 重构前端代码
 - [ ] 完成测试
 
+## TESTING
+
+  1. Black Box Testing [1]: 'aita/auth.py', methods: Boundary Value Analysis
+  2. Black Box Testing [2]: 'aita/api/focus.py', methods: Equivalence Class Partitioning
+  3. White Box Testing: 'aita/api/usr.py'
+
 ## RUN
 
   1. cd /path/to/AITA
