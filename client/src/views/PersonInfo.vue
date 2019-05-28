@@ -17,10 +17,27 @@
             <el-input :disabled="true" v-model="info.date"></el-input>
           </el-form-item>
           <el-form-item label="用户密码">
-            <el-input v-model="info.pwd" show-password></el-input>
+            <el-input placeholder="如不需要修改，请置为空" v-model="info.pwd" show-password></el-input>
           </el-form-item>
         </el-form>
-        <img class="avater" :src="ImageSource" alt="图片读取失败" />
+        <el-upload
+          :action="computeActionURL('usr/updateinfo')"
+          list-type="picture-card"
+          ref="upload"
+          :auto-upload='false'
+          limit="1"
+          :data='info'
+          :on-preview="handlePictureCardPreview"
+          :on-exceed="HandleExceed"
+          :file-list="fileList"
+          :with-credentials='true'
+          :on-success='HandleSuccess'>
+          <i class="el-icon-plus"></i>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="dialogImageUrl" alt="">
+        </el-dialog>
+        <el-button @click="update" class="update" type="primary">确认更新</el-button>
       </el-card>
     </div>
     <div class="table">
@@ -53,9 +70,11 @@
 import axios from 'axios'
 import checkUsrMixin from '../mixins/checkUsrMixin.js'
 import joinCourseMixin from '../mixins/joinCourseMixin'
+import computeActionURLMixin from '../mixins/computeActionURLMixin.js'
+import md5 from 'js-md5'
 
 export default {
-  mixins: [checkUsrMixin, joinCourseMixin],
+  mixins: [checkUsrMixin, joinCourseMixin, computeActionURLMixin],
   data() {
     return {
       info: {
@@ -66,7 +85,9 @@ export default {
       },
       totalScore: 0,
       classes: [],
-      ImageSource: 'data:image/png;base64,'
+      dialogImageUrl: '',
+      dialogVisible: false,
+      fileList: []
     }
   },
   mounted: function(){
@@ -77,6 +98,92 @@ export default {
     computeStatus: function(data){
       if(data > 60){ return 'success'; }
       else{ return 'exception'; }
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    HandleSuccess: function(){
+      this.$message({ message: '成功更新！', type: 'success' });
+      this.$refs.upload.clearFiles();
+      this.fileList = [];
+      this.refreshUsrInfo();
+    },
+    HandleExceed: function(){
+      this.$message.error('上传图片数量超出限制，只能上传一张！');
+    },
+    update: function(){
+      if(this.$refs.upload.uploadFiles.length == 0){
+        this.$message.error('用户头像不能为空。');
+        this.$refs.upload.clearFiles();
+        this.fileList = [];
+        this.refreshUsrInfo();
+      }
+      else if(this.info.pwd == '' && this.$refs.upload.uploadFiles[0].status == 'success'){
+        this.$message('没有需要更新的信息！');
+      }
+      else{ // At least one of them need to be updated
+        let uploadFile = this.$refs.upload.uploadFiles[0];
+        let obj = this;
+        if(this.info.pwd.length < 6 && this.info.pwd != ''){
+          this.$message.error('您输入的密码过于简单（请确保密码长度>6）');
+        }
+        if(uploadFile.status == 'ready'){
+          var xhr = new XMLHttpRequest;
+          xhr.responseType = 'blob';
+
+          xhr.onload = function() {
+            var recoveredBlob = xhr.response;
+            var reader = new FileReader;
+            reader.onload = function() {
+
+              var compareParams = new URLSearchParams();
+              compareParams.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
+              compareParams.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
+              compareParams.append('image_base64_1', obj.$refs.upload.fileList[0].url);
+              compareParams.append('image_base64_2', reader.result);
+              axios({
+                method: 'post',
+                url: 'https://api-cn.faceplusplus.com/facepp/v3/compare',
+                data: compareParams,
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                withCredentials: false
+              })
+              .then(function (response) {
+                console.log('人脸对比置信度：' + response.data.confidence);
+                if(response.data.confidence > 60){
+                  obj.info.pwd = md5(obj.info.pwd);
+                  obj.$refs.upload.submit();
+                }
+                else{
+                  obj.$message.error('请上传同一个人的照片！');
+                  obj.$refs.upload.clearFiles();
+                  obj.fileList = [];
+                  obj.refreshUsrInfo();
+                }
+              })
+              .catch(function() {
+                obj.$message.error('糟糕，哪里出了点问题！');
+              });
+            };
+            reader.readAsDataURL(recoveredBlob);
+          };
+          xhr.open('GET', uploadFile.url);
+          xhr.send();
+        }
+        if(uploadFile.status == 'success' && this.info.pwd != ''){
+          axios.get(process.env.VUE_APP_API_URL + 'usr/updatepwd', {
+            params: { pwd: md5(this.info.pwd) }
+          })
+          .then(function(response) {
+            obj.$message({ message: '成功更新！', type: 'success' });
+            obj.info.pwd = '';
+          })
+          .catch(function () {
+            obj.$message.error('糟糕，哪里出了点问题！');
+          });
+        }
+      }
     },
     computeTotalComplete: function(){
       let score = 0;
@@ -92,6 +199,7 @@ export default {
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           obj.info = response.data;
+          obj.info.pwd = '';
         }
       })
       .catch(function () {
@@ -101,7 +209,7 @@ export default {
       axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
       .then(function(response) {
         if(obj.checkUsr(response.data)){
-          obj.ImageSource += response.data;
+          obj.fileList.push({ name:'usr.png', url: 'data:image/png;base64,'+response.data });
         }
       })
       .catch(function () {
@@ -138,6 +246,9 @@ export default {
   text-align: center;
   margin-left: 20%;
   margin-right: 20%;
+  margin-top: 2%;
+}
+.update{
   margin-top: 2%;
 }
 .table{

@@ -117,7 +117,7 @@ export default {
       this.$emit('change');
     },
     HandleExceed: function(){
-      this.$message.error('上传图片超出限制，只能上传一张！');
+      this.$message.error('上传图片数量超出限制，只能上传一张！');
     },
     HandlePreview: function(file){
       this.dialogImageUrl = file.url;

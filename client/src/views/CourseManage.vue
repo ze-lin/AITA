@@ -24,6 +24,7 @@
         </el-form-item>
         <el-upload ref="upload"
           :action="computeActionURL('course/uploadfile')"
+          :with-credentials='true'
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
           :on-success="onSuccess">
