@@ -20,6 +20,21 @@ def get_all_course():
     return jsonify(json_body)
 
 
+@bp.route('/getall-teacher', methods=['GET'])
+@login_required
+def get_all_course_teacher():
+    COURSE = get_collection('course')
+    if g.usr['role'] == 'student':
+        return 'student'
+
+    result = COURSE.find({ 'teacher': g.usr['usr'] })
+    json_body = {}
+    for i, document in enumerate(result):
+        json_body[i] = document
+        json_body[i].pop('_id')
+    return jsonify(json_body)
+
+
 @bp.route('/create', methods=['GET'])
 @login_required
 def create_course():
@@ -44,9 +59,13 @@ def create_course():
 @bp.route('/delete', methods=['GET'])
 @login_required
 def delete_course():
+    # 级联删除
     COURSE = get_collection('course')
+    COLLECTION = get_collection('collection') # delete all
+    course_id = request.args.get('id')
 
-    COURSE.delete_one({'id': request.args.get('id')})
+    COLLECTION.delete_many({ 'id': course_id })
+    COURSE.delete_one({'id': course_id})
     return 'Success!'
 
 
@@ -101,8 +120,17 @@ def get_exam():
 @login_required
 def view():
     COURSE = get_collection('course')
-
-    result = COURSE.find_one({'id': request.args.get('id')})
+    course_id = request.args.get('id')
+    result = COURSE.find_one({'id': course_id })
     result['view'] += 1
-    COURSE.replace_one({'id': request.args.get('id')}, result)
+    COURSE.replace_one({'id': course_id }, result)
+
+    COLLECTION = get_collection('collection')
+    document = {
+        'id': course_id,
+        'usr': g.usr['usr']
+    }
+    result = COLLECTION.find_one(document)
+    if not result:
+        COLLECTION.insert_one(document)
     return 'Success!'

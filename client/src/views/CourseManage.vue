@@ -8,9 +8,9 @@
         <el-form-item label="课程分类">
           <el-select v-model="form.genre" placeholder="请选择课程分类">
             <el-option label="计算机" value="Computer"></el-option>
-            <el-option label="心理学" value="Mind"></el-option>
+            <el-option label="经济学" value="Economy"></el-option>
             <el-option label="社会科学" value="Social"></el-option>
-            <el-option label="数学与自然科学" value="Math"></el-option>
+            <el-option label="数学" value="Math"></el-option>
             <el-option label="历史学" value="History"></el-option>
             <el-option label="文学与艺术" value="Art"></el-option>
           </el-select>
@@ -24,6 +24,7 @@
         </el-form-item>
         <el-upload ref="upload"
           :action="computeActionURL('course/uploadfile')"
+          :with-credentials='true'
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
           :on-success="onSuccess">
@@ -159,7 +160,7 @@ export default {
     },
     removeCourse: function(row){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + '/course/delete', {
+      axios.get(process.env.VUE_APP_API_URL + 'course/delete', {
         params: { id: row.id }
       })
       .then(function(response) {
@@ -174,13 +175,18 @@ export default {
     },
     refreshCourse: function(){
       let obj = this;
-      
-      axios.get(process.env.VUE_APP_API_URL + 'course/getall')
+      axios.get(process.env.VUE_APP_API_URL + 'course/getall-teacher')
       .then(function(response) {
         if(obj.checkUsr(response.data)){
-          obj.classes = [];
-          for(let i in response.data){
-            obj.classes.push(response.data[i]);
+          if(response.data == 'student'){
+            obj.$router.push('/');
+            obj.$message('此功能仅对教师用户开放');
+          }
+          else{
+            obj.classes = [];
+            for(let i in response.data){
+              obj.classes.push(response.data[i]);
+            }
           }
         }
       })

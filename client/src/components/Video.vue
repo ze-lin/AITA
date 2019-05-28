@@ -84,10 +84,12 @@ export default {
       let obj = this;
       let currentImage = this.take_image();
 
-      axios.get(process.env.VUE_APP_API_URL + 'usr/getpicstr')
+      axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
       .then(function(response) {
         let compareImage = '';
         compareImage = 'data:image/png;base64,' + response.data;
+        // console.log(compareImage);
+        // console.log(currentImage);
         var compareParams = new URLSearchParams();
         compareParams.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
         compareParams.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
