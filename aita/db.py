@@ -4,6 +4,9 @@ from flask import current_app, g
 def get_db(): # set to before requests
     if 'db' not in g:
         g.db = MongoClient(current_app.config['DATABASE'])
+
+    if current_app.config['TESTING']:
+        return g.db['test']
     return g.db['aita']
 
 def get_collection(collection_name):
@@ -12,10 +15,8 @@ def get_collection(collection_name):
 
 def close_db(e=None):
     db = g.pop('db', None)
-
     if db is not None:
         db.close()
-
 
 def init_app(app):
     app.teardown_appcontext(close_db)

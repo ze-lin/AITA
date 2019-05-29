@@ -10,8 +10,13 @@ def sign_up():
     MEMBER = get_collection('member')
 
     result = MEMBER.find_one({'usr': request.form['usr']})
+    if request.form['usr'] == '':
+        return 'require username'
+    elif request.form['pwd'] == '':
+        return 'require password'
+
     if result:
-        return 'Taken'
+        return 'Taken!'
     else:
         image = request.files['file']
         document = {
@@ -19,7 +24,7 @@ def sign_up():
             'pwd': request.form['pwd'],
             'role': request.form['role'],
             'date': str(datetime.date.today()),
-            'pic': base64.encodestring(image.read())
+            'pic': base64.encodebytes(image.read())
         }
         MEMBER.insert_one(document)
         return 'Success!'
