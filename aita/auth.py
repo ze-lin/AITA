@@ -11,9 +11,9 @@ def sign_up():
 
     result = MEMBER.find_one({'usr': request.form['usr']})
     if request.form['usr'] == '':
-        return 'require username'
+        return 'Require Username'
     elif request.form['pwd'] == '':
-        return 'require password'
+        return 'Require Password'
 
     if result:
         return 'Taken!'

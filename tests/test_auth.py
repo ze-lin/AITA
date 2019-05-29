@@ -1,12 +1,12 @@
 # Black Box Testing with Boundary Value Analysis method
 import pytest
 from io import BytesIO
-from aita.db import get_collection
 
 @pytest.mark.parametrize(('usr', 'pwd', 'message'), (
-    ('', '', b'require username'),
-    ('usrname', '', b'require password'),
+    ('', '', b'Require Username'),
+    ('usrname', '', b'Require Password'),
     ('init', 'rightpwd', b'Taken'),
+    ('test', 'rightpwd', b'Success'),
 ))
 def test_sign_up(client, usr, pwd, message):
     data={'usr': usr, 'pwd': pwd, 'role': 'teacher'}
