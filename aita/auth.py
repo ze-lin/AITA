@@ -50,7 +50,7 @@ def sign_in():
 @bp.before_app_request
 def load_logged_in_user():
     usr_id = session.get('usr')
-
+    print('before_app_request', usr_id)
     if usr_id is None:
         g.usr = None
     else:

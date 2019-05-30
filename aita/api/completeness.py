@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, g
+from flask import Blueprint, jsonify, g
 from aita.auth import login_required
 from aita.db import get_collection
 from aita.api.focus import calcu_focus
