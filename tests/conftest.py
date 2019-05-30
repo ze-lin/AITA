@@ -3,7 +3,7 @@ from aita import create_app
 from pymongo import MongoClient
 from flask import current_app
 from aita.db import get_collection
-# coverage report -m aita/api/usr.py aita/api/focus.py aita/auth.py
+
 
 @pytest.fixture
 def app():

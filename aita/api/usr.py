@@ -27,7 +27,7 @@ def update_usr_info():
     if pwd != '':
         result['pwd'] = pwd
     image = request.files['file']
-    result['pic'] = base64.encodestring(image.read())
+    result['pic'] = base64.encodebytes(image.read())
     MEMBER.replace_one({'usr': g.usr['usr']}, result)
 
     return 'Success!'
@@ -57,15 +57,3 @@ def get_usr_pic():
     response = make_response(result['pic'])
     response.headers.set('Content-Type', 'image/png')
     return response
-
-
-# @bp.route('/getpicstr', methods=['GET'])
-# @login_required
-# def get_usr_picstr():
-#     """
-#         为人脸对比返回用户上传的图片
-#     """
-#     MEMBER = get_collection('member')
-
-#     result = MEMBER.find_one({'usr': g.usr['usr']})
-#     return result['pic']
