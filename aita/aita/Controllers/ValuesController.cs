@@ -12,9 +12,9 @@ namespace aita.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<string> Get()
+        public ActionResult<IEnumerable<string>> Get()
         {
-            return "hello wolrd";
+            return new string[] { "value1", "value2" };
         }
 
         // GET api/values/5
