@@ -20,7 +20,7 @@ export default {
   mounted: function(){
     let resultElement = document.getElementById('result-link');
     let obj = this;
-    axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
+    axios.get(process.env.VUE_APP_API_URL + 'api/course/getexam', {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
@@ -47,8 +47,11 @@ export default {
       },
     });
 
-    axios.get(process.env.VUE_APP_API_URL + 'focus/get', {
-      params: { course_id: this.$route.params.id }
+    axios.get(process.env.VUE_APP_API_URL + 'api/focus/get', {
+      params: { 
+        id: this.$route.params.id,
+        usr: obj.$root.$data.usr,
+        }
     })
     .then(function(response) {
       if(obj.checkUsr(response.data)){
@@ -77,9 +80,10 @@ export default {
     rateChange(){
       if(this.rate == 0){ return; }
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'focus/rate', {
+      axios.get(process.env.VUE_APP_API_URL + 'api/focus/rate', {
         params: {
-          course_id: this.$route.params.id,
+          usr: this.$root.$data.usr,
+          id: this.$route.params.id,
           rate: this.rate
         }
       })

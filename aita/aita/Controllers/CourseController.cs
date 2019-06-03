@@ -11,7 +11,7 @@ namespace aita.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CourseController: ControllerBase
+    public class CourseController : ControllerBase
     {
         private readonly CourseService _courseService;
 
@@ -25,9 +25,9 @@ namespace aita.Controllers
         public JsonResult GetAllCourse()
         {
             var courseList = _courseService.GetAll();
-            
+
             var resultList = new ArrayList();
-            foreach(Course course in courseList)
+            foreach (Course course in courseList)
             {
                 var tmpCourse = course.ToDic();
                 resultList.Add(tmpCourse);
@@ -46,7 +46,7 @@ namespace aita.Controllers
             newCourse.title = title;
             newCourse.teacher = teacher;
             newCourse.date = DateTime.Now.ToShortDateString().ToString();
-            newCourse.id = DateTime.Now.ToUniversalTime().ToString();
+            newCourse.id = DateTime.Now.ToFileTimeUtc().ToString();
             newCourse.video = video;
             newCourse.genre = genre;
             newCourse.exam = exam;
@@ -80,11 +80,54 @@ namespace aita.Controllers
         {
             var files = Request.Form.Files;
             var result = "";
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 result += file.FileName;
             }
             return result;
         }
+
+        [Route("delete")]
+        [HttpGet]
+        public ActionResult<string> Delete([FromQuery] string id)
+        {
+            _courseService.Delete(id);
+            // 级联删除Collection
+            return "Success!";
+        }
+
+        [Route("getvideo")]
+        [HttpGet]
+        public ActionResult<string> GetVideo([FromQuery] string id)
+        {
+            var tmpCourse = _courseService.Get(id);
+            return tmpCourse.video;
+        }
+
+        [Route("getexam")]
+        [HttpGet]
+        public ActionResult<string> GetExam([FromQuery] string id)
+        {
+            var tmpCourse = _courseService.Get(id);
+            return tmpCourse.exam;
+        }
+
+        [Route("view")]
+        [HttpGet]
+        public ActionResult<string> View([FromQuery] string id)
+        {
+            var tmpCourse = _courseService.Get(id);
+            tmpCourse.view = Convert.ToString(int.Parse(tmpCourse.view) + 1);
+            _courseService.Update(id, tmpCourse);
+            return "Success!";
+        }
+
+        [Route("getreading")]
+        [HttpGet]
+        public ActionResult<string> GetReading(string id)
+        {
+            return "article";
+        }
+
     }
 }

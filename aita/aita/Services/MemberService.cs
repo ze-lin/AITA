@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using aita.Models;
+﻿using aita.Models;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 

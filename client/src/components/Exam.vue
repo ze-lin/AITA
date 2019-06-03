@@ -14,7 +14,7 @@ export default {
     let obj = this;
     let frame = document.getElementsByTagName('iframe')[0];
 
-    axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
+    axios.get(process.env.VUE_APP_API_URL + 'api/course/getexam', {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {

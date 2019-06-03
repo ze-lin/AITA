@@ -3,11 +3,12 @@ export default {
   methods: {
     joinCourse: function(row){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'course/view', {
+      axios.get(process.env.VUE_APP_API_URL + 'api/course/view', {
         params: { id: row.id }
       })
       .then(function(response) {
         if(obj.checkUsr(response.data)){
+          console.log(row.id);
           obj.$router.push('/course/video/' + row.id);
         }
       })

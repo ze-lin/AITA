@@ -1,10 +1,15 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 
 namespace aita.Models
 {
     public class Focus
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
+
         [BsonElement("usr")]
         public string usr { get; set; }
 
@@ -12,9 +17,9 @@ namespace aita.Models
         public string id { get; set; }
 
         [BsonElement("rate")]
-        public int rate { get; set; }
+        public float rate { get; set; }
 
         [BsonElement("emotion")]
-        public string emotion { get; set; } // how to deal with this data object???
+        public Dictionary<string, Dictionary<string, float>> emotion { get; set; } // how to deal with this data object???
     }
 }

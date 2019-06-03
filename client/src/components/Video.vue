@@ -1,7 +1,7 @@
 <template>
   <div class="video">
     <div class="main-video">
-      <video controls src="/static/video.mp4" type="video/mp4"/>
+      <video controls src="/test.mp4" type="video/mp4"/>
       <p>请确认您的摄像头打开后再进行观看视频学习，否则您的学习结果将不会被记录</P>
       <video autoplay="true" id="face"></video>
     </div>
@@ -34,19 +34,19 @@ export default {
     this.videoElement = document.getElementsByTagName('video')[0];
     let video = document.querySelector("#face");
 
-    axios.get(process.env.VUE_APP_API_URL + 'course/getvideo', {
+    axios.get(process.env.VUE_APP_API_URL + 'api/course/getvideo', {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
       if(obj.checkUsr(response.data)){
-        obj.videoElement.src = '/static/' + response.data;
+        obj.videoElement.src = '/' + response.data;
       }
     })
     .catch(function () {
       obj.$message.error('糟糕，哪里出了点问题！');
     });
 
-    axios.get(process.env.VUE_APP_API_URL + 'comment/get', {
+    axios.get(process.env.VUE_APP_API_URL + 'api/comment/get', {
       params: { id: this.$route.params.id }
     })
     .then(function(response) {
@@ -84,12 +84,14 @@ export default {
       let obj = this;
       let currentImage = this.take_image();
 
-      axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
+      axios.get(process.env.VUE_APP_API_URL + 'api/member/getpic', {
+        params: {
+          usr: obj.$root.$data.usr,
+        }
+      })
       .then(function(response) {
         let compareImage = '';
         compareImage = 'data:image/png;base64,' + response.data;
-        // console.log(compareImage);
-        // console.log(currentImage);
         var compareParams = new URLSearchParams();
         compareParams.append('api_key', 'Os99MvSXhTAg7Ly4lvs34gZsTZgXBumH');
         compareParams.append('api_secret', 'hyHyuopDC-qm94LIg7DzrRlPDHv5KCto');
@@ -121,9 +123,10 @@ export default {
               if(response.data['faces'].length != 0){ // 未检测到人脸就不发送请求了，这样对吗？
                 let emotion = response.data['faces'][0]['attributes']['emotion']; //只考虑第一张人脸（应该是最大的那个）
                 let eyegaze = response.data['faces'][0]['attributes']['eyegaze'];
-                axios.get(process.env.VUE_APP_API_URL + 'focus/add', {
+                axios.get(process.env.VUE_APP_API_URL + 'api/focus/add', {
                   params: {
-                    course_id: obj.$route.params.id,
+                    id: obj.$route.params.id,
+                    usr: obj.$root.$data.usr,
                     time: obj.videoElement.currentTime,
                     anger: emotion.anger,
                     neutral: emotion.neutral,

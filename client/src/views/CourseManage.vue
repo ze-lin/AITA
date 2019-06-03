@@ -162,7 +162,7 @@ export default {
     },
     removeCourse: function(row){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'course/delete', {
+      axios.get(process.env.VUE_APP_API_URL + 'api/course/delete', {
         params: { id: row.id }
       })
       .then(function(response) {

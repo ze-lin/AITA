@@ -35,5 +35,15 @@ namespace aita.Services
         {
             _courses.InsertOne(course);
         }
+
+        public void Delete(string id)
+        {
+            _courses.DeleteOne(course => course.id == id);
+        }
+
+        public void Update(string id, Course newCourse)
+        {
+            _courses.ReplaceOne(course => course.id == id, newCourse);
+        }
     }
 }

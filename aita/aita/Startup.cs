@@ -23,6 +23,7 @@ namespace aita
         {
             services.AddScoped<MemberService>();
             services.AddScoped<CourseService>();
+            services.AddScoped<FocusService>();
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAny", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
