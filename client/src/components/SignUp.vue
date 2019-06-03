@@ -28,10 +28,12 @@
       </el-form-item>
       <el-form-item>
         <el-upload
-          :action="computeActionURL('auth/signup')"
+          :action="computeActionURL('api/member/signup')"
           ref="upload"
           :auto-upload='false'
           list-type="picture-card"
+          :headers="{'enctype': 'multipart/form-data'}"
+          name="image"
           :limit="1"
           :data='form'
           :on-exceed="HandleExceed"

@@ -60,13 +60,15 @@ export default {
       if(this.form.usr != '' && this.form.pwd != ''){
         axios({
           method: 'post',
-          url: process.env.VUE_APP_API_URL + 'auth/signin',
+          url: process.env.VUE_APP_API_URL + 'api/member/signin',
           data: params,
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
         })
         .then(function (response) {
-          if(response.status == '200'){
+          if(response.data.status == true){
             obj.$message({ message: '成功登陆！', type: 'success' });
+            obj.$root.$data.usr = obj.form.usr;
+            obj.$root.$data.role = obj.form.role;
             obj.$router.push('/');
           }
           else{

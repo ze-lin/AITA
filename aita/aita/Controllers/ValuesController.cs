@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using aita.Models;
+using aita.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace aita.Controllers
@@ -10,11 +8,26 @@ namespace aita.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly MemberService _memberService;
+
+        public ValuesController(MemberService memberService)
+        {
+            _memberService = memberService;
+        }
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            var test = new Member();
+            test.usr = "test";
+            test.pwd = "123123";
+            test.role = "teacher";
+            test.pic = "images";
+            test.date = "2019";
+
+           //  _memberService.Create(test);
+
+            return "Hello World";
         }
 
         // GET api/values/5

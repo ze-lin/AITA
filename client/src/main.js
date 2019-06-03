@@ -7,7 +7,14 @@ import axios from 'axios'
 Vue.config.productionTip = false
 axios.defaults.withCredentials = true
 
+const source = {
+  usr: 'ludanxer',
+  role: 'teacher',
+  course_id: ''
+}
+
 new Vue({
+  data: source,
   router,
   render: h => h(App)
 }).$mount('#app')

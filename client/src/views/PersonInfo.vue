@@ -21,7 +21,7 @@
           </el-form-item>
         </el-form>
         <el-upload
-          :action="computeActionURL('usr/updateinfo')"
+          :action="computeActionURL('api/member/updateinfo')"
           list-type="picture-card"
           ref="upload"
           :auto-upload='false'
@@ -172,7 +172,7 @@ export default {
           xhr.send();
         }
         if(uploadFile.status == 'success' && this.info.pwd != ''){
-          axios.get(process.env.VUE_APP_API_URL + 'usr/updatepwd', {
+          axios.get(process.env.VUE_APP_API_URL + 'api/member/updatepwd', {
             params: { pwd: md5(this.info.pwd) }
           })
           .then(function(response) {
@@ -195,7 +195,11 @@ export default {
     },
     refreshUsrInfo: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'usr/getinfo')
+      axios.get(process.env.VUE_APP_API_URL + 'api/member/getinfo', {
+        params: {
+          usr: obj.$root.$data.usr,
+        }
+      })
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           obj.info = response.data;
