@@ -2,8 +2,6 @@
 using aita.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
-using MongoDB.Bson;
 using System.Collections.Generic;
 
 namespace aita.Controllers

@@ -5,6 +5,10 @@ namespace aita.Models
 {
     public class Comment
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string _id { get; set; }
+
         [BsonElement("id")]
         public string id { get; set; }
 

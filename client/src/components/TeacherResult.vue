@@ -43,7 +43,7 @@ export default {
     let resultElement = document.getElementById('result-link');
     let obj = this;
 
-    axios.get(process.env.VUE_APP_API_URL + 'course/getexam', {
+    axios.get(process.env.VUE_APP_API_URL + 'api/course/getexam', {
       params: {
         id: this.$route.params.id
       }
@@ -70,8 +70,11 @@ export default {
       },
     });
 
-    axios.get(process.env.VUE_APP_API_URL + 'focus/getavg', {
-      params: { course_id: this.$route.params.id }
+    axios.get(process.env.VUE_APP_API_URL + 'api/focus/getavg', {
+      params: { 
+        id: this.$route.params.id,
+        usr: obj.$root.$data.usr
+        }
     })
     .then(function(response) {
       if(obj.checkUsr(response.data)){
@@ -103,7 +106,7 @@ export default {
   methods: {
     submit: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'comment/add', {
+      axios.get(process.env.VUE_APP_API_URL + 'api/comment/add', {
         params: {
           id: this.$route.params.id,
           startTime: this.form.startTime,
