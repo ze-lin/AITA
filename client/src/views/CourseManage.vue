@@ -23,7 +23,7 @@
           <div class="tip">请前往<b><a target="_blank" href="https://www.wjx.cn/app/exam.aspx" >问卷星</a></b>生成。将生成的考试ID填入上方输入框</div>
         </el-form-item>
         <el-upload ref="upload"
-          :action="computeActionURL('course/uploadfile')"
+          :action="computeActionURL('api/course/uploadfile')"
           :with-credentials='true'
           :on-remove="handleRemove"
           :before-upload="beforeUpload"
@@ -83,14 +83,15 @@ export default {
     onSubmit: function(){
       let obj = this;
       if(this.form.title != '' && this.form.genre != '' && this.form.time != '' && this.form.exam != '' && this.fileReady){
-        axios.get(process.env.VUE_APP_API_URL + 'course/create', {
+        axios.get(process.env.VUE_APP_API_URL + 'api/course/create', {
           params: {
             title: this.form.title,
             genre: this.form.genre,
             exam: this.form.exam,
             time: this.form.time,
             video: this.form.video,
-            article: this.form.article
+            article: this.form.article,
+            teacher: obj.$root.$data.usr
           }
         })
         .then(function(response) {
@@ -151,6 +152,7 @@ export default {
       return true;
     },
     onSuccess(response, file, fileList){
+      console.log(response);
       if(fileList.length == 2){
         this.fileReady = true;
       }
@@ -175,7 +177,11 @@ export default {
     },
     refreshCourse: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'course/getall-teacher')
+      axios.get(process.env.VUE_APP_API_URL + 'api/course/getallteacher',{
+        params: {
+          teacher: obj.$root.$data.usr
+        }
+      })
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           if(response.data == 'student'){

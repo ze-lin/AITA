@@ -16,9 +16,14 @@ namespace aita.Services
             _courses = database.GetCollection<Course>("course");
         }
 
-        public List<Course> Get()
+        public List<Course> GetAll()
         {
             return _courses.Find(course => true).ToList();
+        }
+
+        public List<Course> GetAll(string teacher)
+        {
+            return _courses.Find(course => course.teacher == teacher).ToList();
         }
 
         public Course Get(string id)

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using aita.Services;
 using System;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace aita
 {
@@ -21,6 +22,7 @@ namespace aita
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<MemberService>();
+            services.AddScoped<CourseService>();
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAny", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());

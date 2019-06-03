@@ -78,7 +78,7 @@ export default {
   },
   mounted: function(){
     let obj = this;
-    axios.get(process.env.VUE_APP_API_URL + 'course/getall')
+    axios.get(process.env.VUE_APP_API_URL + 'api/course/getall')
     .then(function(response) {
       obj.courses = [];
       for(let i in response.data){
