@@ -229,11 +229,17 @@ export default {
     },
     refreshCompleteness: function(){
       let obj = this;
-      axios.get(process.env.VUE_APP_API_URL + 'completeness/get')
+      axios.get(process.env.VUE_APP_API_URL + 'api/complete/get',{
+        params: {
+          usr: obj.$root.$data.usr,
+        }
+      })
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           obj.classes = [];
           for(let i in response.data){
+            response.data[i].complete = parseInt(response.data[i].complete);
+            console.log(response.data[i].complete);
             obj.classes.push(response.data[i]);
           }
           obj.computeTotalComplete();

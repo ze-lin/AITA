@@ -4,7 +4,10 @@ export default {
     joinCourse: function(row){
       let obj = this;
       axios.get(process.env.VUE_APP_API_URL + 'api/course/view', {
-        params: { id: row.id }
+        params: { 
+          id: row.id,
+          usr: obj.$root.$data.usr
+        }
       })
       .then(function(response) {
         if(obj.checkUsr(response.data)){

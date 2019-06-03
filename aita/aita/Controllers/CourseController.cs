@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 
-
 namespace aita.Controllers
 {
     [Route("api/[controller]")]
@@ -114,11 +113,16 @@ namespace aita.Controllers
 
         [Route("view")]
         [HttpGet]
-        public ActionResult<string> View([FromQuery] string id)
+        public ActionResult<string> View([FromQuery] string id, [FromQuery] string usr)
         {
             var tmpCourse = _courseService.Get(id);
             tmpCourse.view = Convert.ToString(int.Parse(tmpCourse.view) + 1);
             _courseService.Update(id, tmpCourse);
+
+            Collection newCollection = new Collection();
+            newCollection.id = id;
+            newCollection.usr = usr;
+            _courseService.AddCollection(newCollection);
             return "Success!";
         }
 

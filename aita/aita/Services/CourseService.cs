@@ -8,12 +8,23 @@ namespace aita.Services
     public class CourseService
     {
         private readonly IMongoCollection<Course> _courses;
+        private readonly IMongoCollection<Collection> _collections;
 
         public CourseService(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("aita"));
             var database = client.GetDatabase("aita");
             _courses = database.GetCollection<Course>("course");
+            _collections = database.GetCollection<Collection>("collection");
+        }
+
+        public void AddCollection(Collection newCollection)
+        {
+            var result = _collections.Find(collection => collection.id == newCollection.id && collection.usr == newCollection.usr);
+            if(result.CountDocuments() == 0)
+            {
+                _collections.InsertOne(newCollection);
+            }
         }
 
         public List<Course> GetAll()
@@ -39,6 +50,7 @@ namespace aita.Services
         public void Delete(string id)
         {
             _courses.DeleteOne(course => course.id == id);
+            _collections.DeleteMany(collection => collection.id == id);
         }
 
         public void Update(string id, Course newCourse)
