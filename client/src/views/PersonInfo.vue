@@ -25,7 +25,7 @@
           list-type="picture-card"
           ref="upload"
           :auto-upload='false'
-          limit="1"
+          :limit=1
           :data='info'
           :on-preview="handlePictureCardPreview"
           :on-exceed="HandleExceed"
@@ -173,7 +173,10 @@ export default {
         }
         if(uploadFile.status == 'success' && this.info.pwd != ''){
           axios.get(process.env.VUE_APP_API_URL + 'api/member/updatepwd', {
-            params: { pwd: md5(this.info.pwd) }
+            params: {
+              pwd: md5(this.info.pwd),
+              usr: obj.$root.$data.usr,
+              }
           })
           .then(function(response) {
             obj.$message({ message: '成功更新！', type: 'success' });
@@ -210,7 +213,11 @@ export default {
         obj.$message.error('糟糕，哪里出了点问题！');
       });
 
-      axios.get(process.env.VUE_APP_API_URL + 'usr/getpic')
+      axios.get(process.env.VUE_APP_API_URL + 'api/member/getpic', {
+        params: {
+          usr: obj.$root.$data.usr,
+        }
+      })
       .then(function(response) {
         if(obj.checkUsr(response.data)){
           obj.fileList.push({ name:'usr.png', url: 'data:image/png;base64,'+response.data });

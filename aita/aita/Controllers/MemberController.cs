@@ -108,5 +108,13 @@ namespace aita.Controllers
             _memberService.Update(usr, tmpMember);
             return "Success!";
         }
+
+        [Route("getpic")]
+        [HttpGet]
+        public ActionResult<string> GetUsrPic([FromQuery] string usr)
+        {
+            Member tmpMember = _memberService.Get(usr);
+            return tmpMember.pic;
+        }
     }
 }
