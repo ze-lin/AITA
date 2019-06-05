@@ -3,14 +3,15 @@ import pytest
 
 
 @pytest.mark.parametrize(('emotion', 'vector', 'position', 'course_id','message'), (
-    ('-10', '0', '0', '123', b'Invalid Emotion Input'),
-    ('10', '0', '0', '123', b'Success'),
-    ('110', '0', '0', '123', b'Invalid Emotion Input'),
-    ('10', '-30', '0', '123', b'Invalid Gaze Input'),
-    ('10', '30', '0', '123', b'Invalid Gaze Input'),
-    ('10', '0', '-30', '123', b'Invalid Gaze Input'),
-    ('10', '0', '30', '123', b'Invalid Gaze Input'),
-    ('10', '10', '10', '111', b'Success')
+    ('-0.01', '0', '0', '123', b'Invalid Emotion Input'),
+    ('0.01', '0', '0', '123', b'Success'),
+    ('99.9', '0', '0', '123', b'Success'),
+    ('100.01', '0', '0', '123', b'Invalid Emotion Input'),
+    ('10', '-20.01', '0', '123', b'Invalid Gaze Input'),
+    ('10', '20.01', '0', '123', b'Invalid Gaze Input'),
+    ('10', '0', '-20.01', '123', b'Invalid Gaze Input'),
+    ('10', '0', '20.01', '123', b'Invalid Gaze Input'),
+    ('0.01', '0.01', '0.01', '111', b'Success')
 ))
 def test_add_focus(app, auth, client, emotion, vector, position, course_id, message):
     data = {'anger': emotion,
